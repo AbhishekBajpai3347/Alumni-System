@@ -1,101 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Home - Alumni Career Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/style.css" rel="stylesheet">
+  <%- include('../partials/head', { title: 'Home - AlumniAI' }) %>
 </head>
 <body>
   <%- include('../partials/navbar') %>
 
-  <div class="container py-4">
-    <h2 class="mb-1">Welcome back, <%= user.role === 'student' ? 'Student' : 'Alumnus' %> 👋</h2>
-    <p class="text-muted mb-4">Here's what's happening in your alumni network today.</p>
+  <main class="container py-4">
+    <section class="gradient-navy rounded-4 p-4 p-md-5 mb-4" style="border-radius: var(--radius-card);">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <h1 style="color:#fff; font-size:28px;">Welcome back 👋</h1>
+          <p class="mb-0" style="color: rgba(255,255,255,0.85);">Here's what's happening in your alumni network today.</p>
+        </div>
+        <span class="badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.16); color:#fff; font-weight:600;">
+          <%= user.role === 'student' ? '🎓 Student' : '💼 Alumni' %>
+        </span>
+      </div>
+    </section>
 
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3">
-        <div class="card stat-card text-center p-3 bg-primary text-white h-100">
-          <div class="fs-3 fw-bold"><%= stats.total_alumni %></div>
-          <div class="small">Alumni</div>
+        <div class="stat-card accent-primary h-100">
+          <div class="stat-number"><%= stats.total_alumni %></div>
+          <div class="stat-label">Alumni</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="card stat-card text-center p-3 bg-success text-white h-100">
-          <div class="fs-3 fw-bold"><%= stats.total_students %></div>
-          <div class="small">Students</div>
+        <div class="stat-card accent-success h-100">
+          <div class="stat-number"><%= stats.total_students %></div>
+          <div class="stat-label">Students</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="card stat-card text-center p-3 bg-info text-white h-100">
-          <div class="fs-3 fw-bold"><%= stats.total_companies %></div>
-          <div class="small">Companies</div>
+        <div class="stat-card accent-purple h-100">
+          <div class="stat-number"><%= stats.total_companies %></div>
+          <div class="stat-label">Companies</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="card stat-card text-center p-3 bg-warning text-white h-100">
-          <div class="fs-3 fw-bold"><%= stats.total_questions %></div>
-          <div class="small">Questions Asked</div>
+        <div class="stat-card accent-warning h-100">
+          <div class="stat-number"><%= stats.total_questions %></div>
+          <div class="stat-label">Questions Asked</div>
         </div>
       </div>
     </div>
 
     <div class="row g-4">
-      <div class="col-md-7">
-        <h5>Recommended Alumni</h5>
+      <div class="col-lg-7">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="mb-0" style="font-size:20px;">Recommended Alumni</h2>
+          <a href="/alumni/finder" class="small fw-semibold text-decoration-none">See All →</a>
+        </div>
         <% if (recommended.length === 0) { %>
-          <div class="empty-state">No recommended alumni yet.</div>
+          <div class="card empty-state">
+            <span class="empty-icon">🤝</span>
+            No recommended alumni yet.
+          </div>
         <% } else { %>
-          <div class="row g-3">
+          <div class="scroll-x-row">
             <% recommended.forEach(a => { %>
-              <div class="col-md-6">
-                <a href="/alumni/<%= a.id %>" class="text-decoration-none text-dark">
-                  <div class="card card-alumni h-100 p-3">
-                    <div class="fw-bold"><%= a.name %></div>
-                    <div class="small text-muted"><%= a.job_role || 'N/A' %> at <%= a.company_name || 'N/A' %></div>
-                    <div class="small text-muted">📍 <%= a.location || 'N/A' %> · Class of <%= a.graduation_year || 'N/A' %></div>
+              <a href="/alumni/<%= a.id %>" class="text-decoration-none text-reset" style="min-width:240px;">
+                <div class="card card-alumni h-100 p-3">
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="avatar-circle"><%= a.name.charAt(0) %></span>
+                    <div>
+                      <div class="fw-bold" style="color: var(--text-heading);"><%= a.name %></div>
+                      <div class="small text-muted"><%= a.job_role || 'N/A' %></div>
+                    </div>
                   </div>
-                </a>
-              </div>
+                  <div class="small" style="color: var(--accent-primary); font-weight:600;"><%= a.company_name || 'N/A' %></div>
+                  <div class="small text-muted">📍 <%= a.location || 'N/A' %> · Class of <%= a.graduation_year || 'N/A' %></div>
+                </div>
+              </a>
             <% }) %>
           </div>
         <% } %>
 
-        <h5 class="mt-4">Career Insights &mdash; Top Skills</h5>
+        <h2 class="mt-4 mb-2" style="font-size:20px;">Career Insights — Top Skills</h2>
         <div class="card p-3">
           <% if (topSkills.length === 0) { %>
-            <div class="empty-state">No skill data yet.</div>
+            <div class="empty-state"><span class="empty-icon">📊</span>No skill data yet.</div>
           <% } else { %>
             <% const max = Math.max(...topSkills.map(s => parseInt(s.cnt))); %>
             <% topSkills.forEach(s => { %>
               <div class="mb-2">
                 <div class="d-flex justify-content-between small mb-1">
-                  <span><%= s.name %></span><span><%= s.cnt %></span>
+                  <span style="color: var(--text-heading); font-weight:500;"><%= s.name %></span><span class="text-muted"><%= s.cnt %></span>
                 </div>
-                <div class="chart-bar" style="width: <%= Math.max(10, (s.cnt / max) * 100) %>%;"></div>
+                <div class="chart-bar-track"><div class="chart-bar" style="width: <%= Math.max(10, (s.cnt / max) * 100) %>%;"></div></div>
               </div>
             <% }) %>
           <% } %>
         </div>
       </div>
 
-      <div class="col-md-5">
-        <h5>Recent Alumni Advice</h5>
+      <div class="col-lg-5">
+        <h2 class="mb-2" style="font-size:20px;">Recent Alumni Advice</h2>
         <% if (recentAdvice.length === 0) { %>
-          <div class="empty-state">No advice posted yet.</div>
+          <div class="card empty-state"><span class="empty-icon">💬</span>No advice posted yet.</div>
         <% } else { %>
           <% recentAdvice.forEach(a => { %>
             <div class="card p-3 mb-2">
               <div class="small text-muted mb-1">Q: <%= a.question %></div>
-              <div class="small">"<%= a.answer %>" &mdash; <strong><%= a.alumni_name %></strong></div>
+              <div class="small">"<%= a.answer %>" &mdash; <strong style="color: var(--text-heading);"><%= a.alumni_name %></strong></div>
             </div>
           <% }) %>
         <% } %>
         <a href="/advice" class="btn btn-outline-primary btn-sm mt-2">View all advice →</a>
       </div>
     </div>
-  </div>
+  </main>
 
   <%- include('../partials/footer') %>
 </body>

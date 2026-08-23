@@ -1,62 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Alumni Finder - Alumni Career Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/style.css" rel="stylesheet">
+  <%- include('../partials/head', { title: 'Alumni Finder - AlumniAI' }) %>
 </head>
 <body>
   <%- include('../partials/navbar') %>
-  <div class="container py-4">
-    <h3 class="mb-3">Alumni Finder</h3>
+  <main class="container py-4">
+    <h1 class="mb-3" style="font-size:24px;">Alumni Finder</h1>
 
     <form method="GET" action="/alumni/finder" class="card p-3 mb-4">
       <div class="row g-2">
-        <div class="col-md-3"><input class="form-control" name="name" placeholder="Name" value="<%= query.name || '' %>"></div>
-        <div class="col-md-2"><input class="form-control" name="graduation_year" placeholder="Grad Year" value="<%= query.graduation_year || '' %>"></div>
-        <div class="col-md-2"><input class="form-control" name="branch" placeholder="Branch" value="<%= query.branch || '' %>"></div>
-        <div class="col-md-2"><input class="form-control" name="company" placeholder="Company" value="<%= query.company || '' %>"></div>
-        <div class="col-md-2"><input class="form-control" name="skills" placeholder="Skill" value="<%= query.skills || '' %>"></div>
-        <div class="col-md-1"><button class="btn btn-primary w-100" type="submit">Search</button></div>
+        <div class="col-md-3">
+          <label class="form-label small" for="f_name">Name</label>
+          <input class="form-control" id="f_name" name="name" placeholder="Search by name..." value="<%= query.name || '' %>">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small" for="f_grad">Grad Year</label>
+          <input class="form-control" id="f_grad" name="graduation_year" placeholder="e.g. 2021" value="<%= query.graduation_year || '' %>">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small" for="f_branch">Branch</label>
+          <input class="form-control" id="f_branch" name="branch" placeholder="Branch" value="<%= query.branch || '' %>">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small" for="f_company">Company</label>
+          <input class="form-control" id="f_company" name="company" placeholder="Company" value="<%= query.company || '' %>">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label small" for="f_skill">Skill</label>
+          <input class="form-control" id="f_skill" name="skills" placeholder="Skill" value="<%= query.skills || '' %>">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+          <button class="btn btn-primary w-100" type="submit">Search</button>
+        </div>
       </div>
       <div class="row g-2 mt-1">
-        <div class="col-md-4"><input class="form-control" name="location" placeholder="Location" value="<%= query.location || '' %>"></div>
+        <div class="col-md-4">
+          <label class="form-label small" for="f_location">Location</label>
+          <input class="form-control" id="f_location" name="location" placeholder="Location" value="<%= query.location || '' %>">
+        </div>
       </div>
     </form>
 
     <% if (typeof error !== 'undefined' && error) { %>
-      <div class="alert alert-danger"><%= error %></div>
+      <div class="alert alert-danger" role="alert"><%= error %></div>
     <% } %>
 
     <% if (results.length === 0) { %>
-      <div class="empty-state">
-        <h5>No alumni found</h5>
-        <p>Try adjusting your filters, or use the <a href="/ai/finder">AI Finder</a> to describe what you're looking for in plain English.</p>
+      <div class="card empty-state">
+        <span class="empty-icon">🔍</span>
+        <h3 style="font-size:16px;">No alumni found</h3>
+        <p class="mb-0">Try adjusting your filters, or use the <a href="/ai/finder">AI Finder</a> to describe what you're looking for in plain English.</p>
       </div>
     <% } else { %>
       <div class="row g-3">
         <% results.forEach(a => { %>
           <div class="col-md-4">
-            <a href="/alumni/<%= a.id %>" class="text-decoration-none text-dark">
-              <div class="card card-alumni h-100 p-3">
-                <div class="fw-bold"><%= a.name %></div>
-                <div class="small text-muted"><%= a.job_role || 'N/A' %> at <%= a.company_name || 'N/A' %></div>
+            <a href="/alumni/<%= a.id %>" class="text-decoration-none text-reset">
+              <div class="card card-alumni h-100 p-3 d-flex flex-column">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="avatar-circle"><%= a.name.charAt(0) %></span>
+                  <div>
+                    <div class="fw-bold" style="color: var(--text-heading);"><%= a.name %></div>
+                    <div class="small text-muted"><%= a.job_role || 'N/A' %></div>
+                  </div>
+                </div>
+                <div class="small mb-1" style="color: var(--accent-primary); font-weight:600;"><%= a.company_name || 'N/A' %></div>
                 <div class="small text-muted">🎓 <%= a.department_name || 'N/A' %>, Class of <%= a.graduation_year || 'N/A' %></div>
                 <div class="small text-muted mb-2">📍 <%= a.location || 'N/A' %></div>
-                <div>
+                <div class="mb-3">
                   <% (a.skills || []).slice(0, 4).forEach(s => { %>
-                    <span class="badge bg-light text-dark border me-1"><%= s %></span>
+                    <span class="chip"><%= s %></span>
                   <% }) %>
                 </div>
+                <div class="mt-auto"><span class="btn btn-outline-primary btn-sm w-100">View Profile</span></div>
               </div>
             </a>
           </div>
         <% }) %>
       </div>
     <% } %>
-  </div>
+  </main>
   <%- include('../partials/footer') %>
 </body>
 </html>

@@ -1,38 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Advice - Alumni Career Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/style.css" rel="stylesheet">
+  <%- include('../partials/head', { title: 'Advice - AlumniAI' }) %>
 </head>
 <body>
   <%- include('../partials/navbar') %>
-  <div class="container py-4" style="max-width:800px;">
-    <h3 class="mb-3">💬 Advice</h3>
+  <main class="container py-4" style="max-width:800px;">
+    <h1 class="mb-3" style="font-size:24px;">💬 Advice</h1>
 
     <% if (user.role === 'student') { %>
       <div class="card p-3 mb-4">
-        <h6>Ask a Question</h6>
+        <h3 style="font-size:16px;">Ask a Question</h3>
         <form method="POST" action="/advice/questions">
-          <textarea class="form-control mb-2" name="question" rows="2" placeholder="e.g. How do I prepare for a data science internship?" required></textarea>
+          <label class="form-label small" for="questionInput">Your question</label>
+          <textarea id="questionInput" class="form-control mb-2" name="question" rows="2" placeholder="e.g. How do I prepare for a data science internship?" required></textarea>
           <button class="btn btn-primary btn-sm" type="submit">Post Question</button>
         </form>
       </div>
     <% } %>
 
     <% if (questions.length === 0) { %>
-      <div class="empty-state">No questions yet. Be the first to ask!</div>
+      <div class="card empty-state"><span class="empty-icon">💬</span>No questions yet. Be the first to ask!</div>
     <% } %>
 
     <% questions.forEach(q => { %>
       <div class="card p-3 mb-3">
-        <div class="fw-bold mb-1">Q: <%= q.question %></div>
-        <div class="small text-muted mb-2">asked by <%= q.student_name %></div>
+        <div class="fw-bold mb-1" style="color:var(--text-heading);">Q: <%= q.question %></div>
+        <div class="small text-muted mb-2">asked by <%= q.student_name %> · <%= q.answers.length %> answer<%= q.answers.length === 1 ? '' : 's' %></div>
+
+        <% if (q.answers.length === 0) { %>
+          <div class="small text-muted fst-italic mb-2">Be the first to answer this question!</div>
+        <% } %>
 
         <% q.answers.forEach(a => { %>
-          <div class="border-start border-3 border-primary ps-2 mb-2">
+          <div class="border-start border-3 ps-2 mb-2" style="border-color: var(--accent-primary) !important;">
             <div class="small"><%= a.answer %></div>
             <div class="small text-muted">&mdash; <%= a.alumni_name %></div>
             <% if (myAlumniId && myAlumniId === a.alumni_id) { %>
@@ -54,8 +55,7 @@
         <% } %>
       </div>
     <% }) %>
-  </div>
+  </main>
   <%- include('../partials/footer') %>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

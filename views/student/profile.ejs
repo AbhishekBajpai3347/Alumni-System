@@ -1,32 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My Profile - Alumni Career Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/style.css" rel="stylesheet">
+  <%- include('../partials/head', { title: 'My Profile - AlumniAI' }) %>
 </head>
 <body>
   <%- include('../partials/navbar') %>
-  <div class="container py-4" style="max-width:640px;">
+  <main class="container py-4" style="max-width:640px;">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3>My Profile</h3>
+      <h1 style="font-size:24px;">My Profile</h1>
       <a href="/student/profile/edit" class="btn btn-outline-primary btn-sm">Edit Profile</a>
     </div>
     <div class="card p-4">
-      <p><strong>Name:</strong> <%= profile.name %></p>
-      <p><strong>Enrollment Number:</strong> <%= profile.enrollment_number %></p>
-      <p><strong>Branch:</strong> <%= profile.branch || 'Not set' %></p>
-      <p><strong>Year:</strong> <%= profile.year || 'Not set' %></p>
-      <p><strong>Graduation Year:</strong> <%= profile.graduation_year || 'Not set' %></p>
-      <p class="mb-0"><strong>Interests:</strong>
-        <% if (profile.interests.length === 0) { %> None set <% } else { %>
-          <% profile.interests.forEach(i => { %><span class="badge bg-secondary me-1"><%= i %></span><% }) %>
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <span class="avatar-circle lg"><%= profile.name.charAt(0) %></span>
+        <div>
+          <div class="fw-bold" style="font-size:18px; color: var(--text-heading);"><%= profile.name %></div>
+          <div class="small text-muted">Enrollment: <%= profile.enrollment_number %></div>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-sm-6 mb-2"><span class="small text-muted d-block">Branch</span><%= profile.branch || 'Not set' %></div>
+        <div class="col-sm-6 mb-2"><span class="small text-muted d-block">Year</span><%= profile.year || 'Not set' %></div>
+        <div class="col-sm-6 mb-2"><span class="small text-muted d-block">Graduation Year</span><%= profile.graduation_year || 'Not set' %></div>
+      </div>
+      <span class="small text-muted d-block mb-1">Interests</span>
+      <p class="mb-0">
+        <% if (profile.interests.length === 0) { %><span class="text-muted small">None set</span><% } else { %>
+          <% profile.interests.forEach(i => { %><span class="chip"><%= i %></span><% }) %>
         <% } %>
       </p>
     </div>
-  </div>
+  </main>
   <%- include('../partials/footer') %>
 </body>
 </html>

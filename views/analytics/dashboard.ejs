@@ -1,28 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Insights - Alumni Career Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/style.css" rel="stylesheet">
+  <%- include('../partials/head', { title: 'Insights - AlumniAI' }) %>
 </head>
 <body>
   <%- include('../partials/navbar') %>
-  <div class="container py-4">
-    <h3 class="mb-4">📊 Data Intelligence Dashboard</h3>
+  <main class="container py-4">
+    <h1 class="mb-4" style="font-size:24px;">📊 Data Intelligence Dashboard</h1>
 
     <div class="row g-4">
       <div class="col-md-6">
         <div class="card p-3 h-100">
-          <h6>Career Distribution (by Job Role)</h6>
-          <% if (careerDist.length === 0) { %><div class="empty-state">No data yet.</div>
+          <h2 style="font-size:16px;">Career Distribution (by Job Role)</h2>
+          <% if (careerDist.length === 0) { %><div class="empty-state"><span class="empty-icon">📈</span>No data yet.</div>
           <% } else { %>
             <% const max1 = Math.max(...careerDist.map(r => r.count)); %>
             <% careerDist.forEach(r => { %>
               <div class="mb-2">
-                <div class="d-flex justify-content-between small mb-1"><span><%= r.role %></span><span><%= r.count %></span></div>
-                <div class="chart-bar" style="width: <%= Math.max(8, (r.count / max1) * 100) %>%;"></div>
+                <div class="d-flex justify-content-between small mb-1"><span style="color:var(--text-heading);"><%= r.role %></span><span class="text-muted"><%= r.count %></span></div>
+                <div class="chart-bar-track"><div class="chart-bar" style="width: <%= Math.max(8, (r.count / max1) * 100) %>%;"></div></div>
               </div>
             <% }) %>
           <% } %>
@@ -31,14 +27,14 @@
 
       <div class="col-md-6">
         <div class="card p-3 h-100">
-          <h6>Most Common Skills</h6>
-          <% if (topSkills.length === 0) { %><div class="empty-state">No data yet.</div>
+          <h2 style="font-size:16px;">Most Common Skills</h2>
+          <% if (topSkills.length === 0) { %><div class="empty-state"><span class="empty-icon">🧩</span>No data yet.</div>
           <% } else { %>
             <% const max2 = Math.max(...topSkills.map(r => r.count)); %>
             <% topSkills.forEach(r => { %>
               <div class="mb-2">
-                <div class="d-flex justify-content-between small mb-1"><span><%= r.name %></span><span><%= r.count %></span></div>
-                <div class="chart-bar" style="width: <%= Math.max(8, (r.count / max2) * 100) %>%;"></div>
+                <div class="d-flex justify-content-between small mb-1"><span style="color:var(--text-heading);"><%= r.name %></span><span class="text-muted"><%= r.count %></span></div>
+                <div class="chart-bar-track"><div class="chart-bar" style="width: <%= Math.max(8, (r.count / max2) * 100) %>%;"></div></div>
               </div>
             <% }) %>
           <% } %>
@@ -47,14 +43,14 @@
 
       <div class="col-md-6">
         <div class="card p-3 h-100">
-          <h6>Top Companies</h6>
-          <% if (topCompanies.length === 0) { %><div class="empty-state">No data yet.</div>
+          <h2 style="font-size:16px;">Top Companies</h2>
+          <% if (topCompanies.length === 0) { %><div class="empty-state"><span class="empty-icon">🏢</span>No data yet.</div>
           <% } else { %>
             <% const max3 = Math.max(...topCompanies.map(r => r.count)); %>
             <% topCompanies.forEach(r => { %>
               <div class="mb-2">
-                <div class="d-flex justify-content-between small mb-1"><span><%= r.name %></span><span><%= r.count %></span></div>
-                <div class="chart-bar" style="width: <%= Math.max(8, (r.count / max3) * 100) %>%;"></div>
+                <div class="d-flex justify-content-between small mb-1"><span style="color:var(--text-heading);"><%= r.name %></span><span class="text-muted"><%= r.count %></span></div>
+                <div class="chart-bar-track"><div class="chart-bar" style="width: <%= Math.max(8, (r.count / max3) * 100) %>%;"></div></div>
               </div>
             <% }) %>
           <% } %>
@@ -63,21 +59,21 @@
 
       <div class="col-md-6">
         <div class="card p-3 h-100">
-          <h6>Alumni by Graduation Year</h6>
-          <% if (gradYearDist.length === 0) { %><div class="empty-state">No data yet.</div>
+          <h2 style="font-size:16px;">Alumni by Graduation Year</h2>
+          <% if (gradYearDist.length === 0) { %><div class="empty-state"><span class="empty-icon">🎓</span>No data yet.</div>
           <% } else { %>
             <% const max4 = Math.max(...gradYearDist.map(r => r.count)); %>
             <% gradYearDist.forEach(r => { %>
               <div class="mb-2">
-                <div class="d-flex justify-content-between small mb-1"><span><%= r.graduation_year %></span><span><%= r.count %></span></div>
-                <div class="chart-bar" style="width: <%= Math.max(8, (r.count / max4) * 100) %>%;"></div>
+                <div class="d-flex justify-content-between small mb-1"><span style="color:var(--text-heading);"><%= r.graduation_year %></span><span class="text-muted"><%= r.count %></span></div>
+                <div class="chart-bar-track"><div class="chart-bar" style="width: <%= Math.max(8, (r.count / max4) * 100) %>%;"></div></div>
               </div>
             <% }) %>
           <% } %>
         </div>
       </div>
     </div>
-  </div>
+  </main>
   <%- include('../partials/footer') %>
 </body>
 </html>

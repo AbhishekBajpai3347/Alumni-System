@@ -1,27 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Career Journey - Alumni Career Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/style.css" rel="stylesheet">
+  <%- include('../partials/head', { title: 'Career Journey - AlumniAI' }) %>
 </head>
 <body>
   <%- include('../partials/navbar') %>
-  <div class="container py-4" style="max-width:700px;">
-    <h3 class="mb-3">My Career Journey</h3>
-    <% if (error) { %><div class="alert alert-danger py-2"><%= error %></div><% } %>
+  <main class="container py-4" style="max-width:700px;">
+    <h1 class="mb-3" style="font-size:24px;">My Career Journey</h1>
+    <% if (error) { %><div class="alert alert-danger py-2" role="alert"><%= error %></div><% } %>
 
     <% if (profile.journey.length === 0) { %>
-      <div class="empty-state mb-3">No career journey entries yet. Add your first one below.</div>
+      <div class="card empty-state mb-3"><span class="empty-icon">💼</span>No career journey entries yet. Add your first one below.</div>
     <% } else { %>
       <div class="timeline mb-4">
-        <% profile.journey.forEach(j => { %>
+        <% profile.journey.slice().reverse().forEach(j => { %>
           <div class="timeline-item">
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
               <div>
-                <div class="fw-bold"><%= j.role %> <span class="text-muted fw-normal">at <%= j.company_name || 'N/A' %></span></div>
+                <div class="fw-bold" style="color: var(--text-heading);"><%= j.role %> <span class="text-muted fw-normal">at <%= j.company_name || 'N/A' %></span></div>
                 <div class="small text-muted">
                   <%= j.start_date ? new Date(j.start_date).toLocaleDateString() : '?' %>
                   &ndash;
@@ -39,27 +35,36 @@
     <% } %>
 
     <div class="card p-3">
-      <h6>Add Career Entry</h6>
-      <form method="POST" action="/alumni/career">
+      <h3 style="font-size:16px;">Add Career Entry</h3>
+      <form method="POST" action="/alumni/career" novalidate>
         <div class="row g-2">
-          <div class="col-md-6"><input class="form-control" name="company" placeholder="Company" required></div>
-          <div class="col-md-6"><input class="form-control" name="role" placeholder="Role" required></div>
+          <div class="col-md-6">
+            <label class="form-label small" for="company">Company</label>
+            <input id="company" class="form-control" name="company" placeholder="Company" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small" for="role">Role</label>
+            <input id="role" class="form-control" name="role" placeholder="Role" required>
+          </div>
         </div>
         <div class="row g-2 mt-1">
           <div class="col-md-6">
-            <label class="form-label small">Start Date</label>
-            <input type="date" class="form-control" name="start_date">
+            <label class="form-label small" for="start_date">Start Date</label>
+            <input type="date" id="start_date" class="form-control" name="start_date">
           </div>
           <div class="col-md-6">
-            <label class="form-label small">End Date (leave blank if current)</label>
-            <input type="date" class="form-control" name="end_date">
+            <label class="form-label small" for="end_date">End Date (leave blank if current)</label>
+            <input type="date" id="end_date" class="form-control" name="end_date">
           </div>
         </div>
-        <div class="mt-2"><textarea class="form-control" name="description" rows="2" placeholder="Description (optional)"></textarea></div>
-        <button class="btn btn-primary mt-2" type="submit">Add Entry</button>
+        <div class="mt-2">
+          <label class="form-label small" for="description">Description</label>
+          <textarea id="description" class="form-control" name="description" rows="2" placeholder="Optional description"></textarea>
+        </div>
+        <button class="btn btn-primary mt-3" type="submit">Add Entry</button>
       </form>
     </div>
-  </div>
+  </main>
   <%- include('../partials/footer') %>
 </body>
 </html>

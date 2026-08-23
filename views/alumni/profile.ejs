@@ -1,69 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title><%= profile.name %> - Alumni Career Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/style.css" rel="stylesheet">
+  <%- include('../partials/head', { title: profile.name + ' - AlumniAI' }) %>
 </head>
 <body>
   <%- include('../partials/navbar') %>
-  <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-start mb-3">
-      <div>
-        <h3 class="mb-0"><%= profile.name %></h3>
-        <p class="text-muted mb-0"><%= profile.job_role || 'N/A' %> at <%= profile.company_name || 'N/A' %></p>
+  <main class="container py-4">
+    <div class="gradient-navy p-4 mb-4" style="border-radius: var(--radius-card);">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <span class="avatar-circle lg" style="background:#fff; color: var(--color-navy);"><%= profile.name.charAt(0) %></span>
+          <div>
+            <h1 style="color:#fff; font-size:24px; margin-bottom:2px;"><%= profile.name %></h1>
+            <p class="mb-0" style="color: rgba(255,255,255,0.85);"><%= profile.job_role || 'N/A' %> @ <%= profile.company_name || 'N/A' %></p>
+            <p class="mb-0 small" style="color: rgba(255,255,255,0.7);">📍 <%= profile.location || 'N/A' %></p>
+          </div>
+        </div>
+        <% if (isOwner) { %>
+          <a href="/alumni/profile/edit" class="btn btn-outline-light btn-sm">Edit Profile</a>
+        <% } %>
       </div>
-      <% if (isOwner) { %>
-        <a href="/alumni/profile/edit" class="btn btn-outline-primary btn-sm">Edit Profile</a>
-      <% } %>
+    </div>
+
+    <div class="mb-4">
+      <span class="chip-outline chip">🎓 Class of <%= profile.graduation_year || 'N/A' %></span>
+      <span class="chip-outline chip"><%= profile.department_name || 'N/A' %></span>
+      <% if (profile.experience_years) { %><span class="chip-outline chip"><%= profile.experience_years %> yrs experience</span><% } %>
+      <% if (profile.mentorship_available) { %><span class="chip badge-success-soft">✓ Mentorship Available</span><% } %>
+      <% if (profile.referral_available) { %><span class="chip badge-info-soft">✓ Referral Available</span><% } %>
     </div>
 
     <div class="row g-4">
       <div class="col-md-4">
         <div class="card p-3">
-          <p><strong>Branch:</strong> <%= profile.department_name || 'N/A' %></p>
-          <p><strong>Graduation Year:</strong> <%= profile.graduation_year || 'N/A' %></p>
-          <p><strong>Location:</strong> <%= profile.location || 'N/A' %></p>
-          <p><strong>Experience:</strong> <%= profile.experience_years ? profile.experience_years + ' years' : 'N/A' %></p>
-          <p>
-            <% if (profile.linkedin_url) { %><a href="<%= profile.linkedin_url %>" target="_blank" class="btn btn-sm btn-outline-secondary me-1">LinkedIn</a><% } %>
-            <% if (profile.github_url) { %><a href="<%= profile.github_url %>" target="_blank" class="btn btn-sm btn-outline-secondary">GitHub</a><% } %>
-          </p>
-          <p class="mb-1">
-            <% if (profile.mentorship_available) { %><span class="badge bg-success me-1">Open to Mentorship</span><% } %>
-            <% if (profile.referral_available) { %><span class="badge bg-info">Open to Referrals</span><% } %>
-          </p>
-          <hr>
-          <p class="mb-1"><strong>Skills</strong></p>
+          <p class="mb-1"><strong style="color:var(--text-heading);">Skills</strong></p>
           <p>
             <% if (profile.skills.length === 0) { %><span class="text-muted small">None listed</span><% } %>
-            <% profile.skills.forEach(s => { %><span class="badge bg-light text-dark border me-1 mb-1"><%= s %></span><% }) %>
+            <% profile.skills.slice(0, 12).forEach(s => { %><span class="chip"><%= s %></span><% }) %>
+            <% if (profile.skills.length > 12) { %><span class="small text-muted">+<%= profile.skills.length - 12 %> more</span><% } %>
           </p>
-          <p class="mb-1"><strong>Interests</strong></p>
-          <p class="mb-0">
+          <p class="mb-1 mt-2"><strong style="color:var(--text-heading);">Interests</strong></p>
+          <p class="mb-3">
             <% if (profile.interests.length === 0) { %><span class="text-muted small">None listed</span><% } %>
-            <% profile.interests.forEach(i => { %><span class="badge bg-light text-dark border me-1 mb-1"><%= i %></span><% }) %>
+            <% profile.interests.forEach(i => { %><span class="chip"><%= i %></span><% }) %>
           </p>
+          <div class="d-flex gap-2">
+            <% if (profile.linkedin_url) { %><a href="<%= profile.linkedin_url %>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">🔗 LinkedIn</a><% } %>
+            <% if (profile.github_url) { %><a href="<%= profile.github_url %>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">💻 GitHub</a><% } %>
+          </div>
         </div>
 
         <% if (profile.bio) { %>
           <div class="card p-3 mt-3">
-            <p class="mb-0"><strong>Bio</strong><br><%= profile.bio %></p>
+            <p class="mb-1"><strong style="color:var(--text-heading);">Bio</strong></p>
+            <p class="mb-0 small"><%= profile.bio %></p>
           </div>
         <% } %>
       </div>
 
       <div class="col-md-8">
-        <h5>Career Journey</h5>
+        <h2 style="font-size:20px;">Career Journey</h2>
         <% if (profile.journey.length === 0) { %>
-          <div class="empty-state">No career journey entries yet.</div>
+          <div class="card empty-state"><span class="empty-icon">💼</span>No career journey entries yet.</div>
         <% } else { %>
-          <div class="timeline">
-            <% profile.journey.forEach(j => { %>
+          <div class="timeline mb-4">
+            <% profile.journey.slice().reverse().forEach(j => { %>
               <div class="timeline-item">
-                <div class="fw-bold"><%= j.role %> <span class="text-muted fw-normal">at <%= j.company_name || 'N/A' %></span></div>
+                <div class="fw-bold" style="color: var(--text-heading);"><%= j.role %> <span class="text-muted fw-normal">at <%= j.company_name || 'N/A' %></span></div>
                 <div class="small text-muted">
                   <%= j.start_date ? new Date(j.start_date).toLocaleDateString() : '?' %>
                   &ndash;
@@ -75,9 +78,9 @@
           </div>
         <% } %>
 
-        <h5 class="mt-4">Advice Given</h5>
+        <h2 class="mt-2" style="font-size:20px;">Advice Given</h2>
         <% if (profile.advice.length === 0) { %>
-          <div class="empty-state">No advice given yet.</div>
+          <div class="card empty-state"><span class="empty-icon">💬</span>No advice given yet.</div>
         <% } else { %>
           <% profile.advice.forEach(a => { %>
             <div class="card p-3 mb-2">
@@ -88,7 +91,7 @@
         <% } %>
       </div>
     </div>
-  </div>
+  </main>
   <%- include('../partials/footer') %>
 </body>
 </html>

@@ -1,64 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Register - Alumni Career Intelligence</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/style.css" rel="stylesheet">
+  <%- include('../partials/head', { title: 'Register - AlumniAI' }) %>
 </head>
 <body>
-  <div class="container d-flex align-items-center justify-content-center py-5" style="min-height:100vh;">
-    <div class="card shadow-sm p-4" style="max-width:560px; width:100%;">
-      <h3 class="mb-3 text-center">🎓 Create Your Account</h3>
+  <div class="auth-shell">
+    <div class="auth-card" style="max-width:580px;">
+      <h1 class="text-center mb-1" style="font-size:26px;">🎓 Create Your Account</h1>
+      <p class="text-center text-muted mb-4">Join the AlumniAI network</p>
       <% if (error) { %>
-        <div class="alert alert-danger py-2"><%= error %></div>
+        <div class="alert alert-danger py-2" role="alert"><%= error %></div>
       <% } %>
 
-      <ul class="nav nav-pills mb-3 justify-content-center" role="tablist">
-        <li class="nav-item">
-          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#studentTab" type="button">Student</button>
+      <ul class="nav nav-pills mb-4 justify-content-center gap-2" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#studentTab" type="button" role="tab" aria-selected="true">Student</button>
         </li>
-        <li class="nav-item">
-          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#alumniTab" type="button">Alumni</button>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#alumniTab" type="button" role="tab" aria-selected="false">Alumni</button>
         </li>
       </ul>
 
       <div class="tab-content">
-        <div class="tab-pane fade show active" id="studentTab">
-          <form method="POST" action="/auth/register/student">
-            <div class="mb-2"><label class="form-label">Name</label><input class="form-control" name="name" required></div>
-            <div class="mb-2"><label class="form-label">Email</label><input type="email" class="form-control" name="email" required></div>
-            <div class="mb-2"><label class="form-label">Password</label><input type="password" class="form-control" name="password" required minlength="8"></div>
-            <div class="mb-2"><label class="form-label">Enrollment Number</label><input class="form-control" name="enrollment_number" required></div>
+        <div class="tab-pane fade show active" id="studentTab" role="tabpanel">
+          <form method="POST" action="/auth/register/student" novalidate>
+            <div class="mb-2"><label class="form-label" for="s_name">Name</label><input id="s_name" class="form-control" name="name" required></div>
+            <div class="mb-2"><label class="form-label" for="s_email">Email</label><input type="email" id="s_email" class="form-control" name="email" required></div>
+            <div class="mb-2"><label class="form-label" for="s_password">Password</label><input type="password" id="s_password" class="form-control" name="password" required minlength="8"></div>
+            <div class="mb-2"><label class="form-label" for="s_enroll">Enrollment Number</label><input id="s_enroll" class="form-control" name="enrollment_number" required></div>
             <div class="row">
-              <div class="col mb-2"><label class="form-label">Branch</label><input class="form-control" name="branch"></div>
-              <div class="col mb-2"><label class="form-label">Year</label><input type="number" class="form-control" name="year" min="1" max="5"></div>
+              <div class="col mb-2">
+                <label class="form-label" for="s_branch">Branch</label>
+                <input id="s_branch" class="form-control" name="branch" list="branchOptions" placeholder="e.g. Computer Engineering">
+                <datalist id="branchOptions">
+                  <option value="Computer Engineering"><option value="Information Technology">
+                  <option value="Mechanical Engineering"><option value="Civil Engineering">
+                  <option value="Electrical Engineering"><option value="Electronics & Communication Engineering">
+                </datalist>
+              </div>
+              <div class="col mb-2">
+                <label class="form-label" for="s_year">Year</label>
+                <select id="s_year" class="form-select" name="year">
+                  <option value="">Select</option>
+                  <option value="1">1st Year</option><option value="2">2nd Year</option>
+                  <option value="3">3rd Year</option><option value="4">4th Year</option><option value="5">5th Year</option>
+                </select>
+              </div>
             </div>
-            <div class="mb-2"><label class="form-label">Graduation Year</label><input type="number" class="form-control" name="graduation_year"></div>
-            <div class="mb-3"><label class="form-label">Interests (comma-separated)</label><input class="form-control" name="interests" placeholder="e.g. Cybersecurity, Cloud Computing"></div>
+            <div class="mb-2"><label class="form-label" for="s_grad">Graduation Year</label><input type="number" id="s_grad" class="form-control" name="graduation_year" placeholder="e.g. 2027"></div>
+            <div class="mb-3">
+              <label class="form-label" for="s_interests">Interests</label>
+              <input id="s_interests" class="form-control" name="interests"
+                data-chip-input
+                data-placeholder="Type an interest and press Enter..."
+                data-suggestions='["Artificial Intelligence","Machine Learning","Cybersecurity","Web Development","Cloud Computing","DevOps","Data Science","Mobile Development","Product Management","Entrepreneurship","UI/UX Design","Finance"]'>
+            </div>
             <button class="btn btn-primary w-100" type="submit">Register as Student</button>
           </form>
         </div>
 
-        <div class="tab-pane fade" id="alumniTab">
-          <form method="POST" action="/auth/register/alumni">
-            <div class="mb-2"><label class="form-label">Name</label><input class="form-control" name="name" required></div>
-            <div class="mb-2"><label class="form-label">Email</label><input type="email" class="form-control" name="email" required></div>
-            <div class="mb-2"><label class="form-label">Password</label><input type="password" class="form-control" name="password" required minlength="8"></div>
+        <div class="tab-pane fade" id="alumniTab" role="tabpanel">
+          <form method="POST" action="/auth/register/alumni" novalidate>
+            <div class="mb-2"><label class="form-label" for="a_name">Name</label><input id="a_name" class="form-control" name="name" required></div>
+            <div class="mb-2"><label class="form-label" for="a_email">Email</label><input type="email" id="a_email" class="form-control" name="email" required></div>
+            <div class="mb-2"><label class="form-label" for="a_password">Password</label><input type="password" id="a_password" class="form-control" name="password" required minlength="8"></div>
             <div class="row">
-              <div class="col mb-2"><label class="form-label">Branch</label><input class="form-control" name="branch"></div>
-              <div class="col mb-2"><label class="form-label">Graduation Year</label><input type="number" class="form-control" name="graduation_year"></div>
+              <div class="col mb-2">
+                <label class="form-label" for="a_branch">Branch</label>
+                <input id="a_branch" class="form-control" name="branch" list="branchOptionsAlumni" placeholder="e.g. Information Technology">
+                <datalist id="branchOptionsAlumni">
+                  <option value="Computer Engineering"><option value="Information Technology">
+                  <option value="Mechanical Engineering"><option value="Civil Engineering">
+                  <option value="Electrical Engineering"><option value="Electronics & Communication Engineering">
+                </datalist>
+              </div>
+              <div class="col mb-2"><label class="form-label" for="a_grad">Graduation Year</label><input type="number" id="a_grad" class="form-control" name="graduation_year" placeholder="e.g. 2020"></div>
             </div>
             <div class="row">
-              <div class="col mb-2"><label class="form-label">Company</label><input class="form-control" name="company"></div>
-              <div class="col mb-2"><label class="form-label">Job Role</label><input class="form-control" name="job_role"></div>
+              <div class="col mb-2"><label class="form-label" for="a_company">Company</label><input id="a_company" class="form-control" name="company"></div>
+              <div class="col mb-2"><label class="form-label" for="a_role">Job Role</label><input id="a_role" class="form-control" name="job_role"></div>
             </div>
-            <div class="mb-2"><label class="form-label">Location</label><input class="form-control" name="location"></div>
-            <div class="mb-2"><label class="form-label">Bio</label><textarea class="form-control" name="bio" rows="2"></textarea></div>
+            <div class="mb-2"><label class="form-label" for="a_location">Location</label><input id="a_location" class="form-control" name="location" placeholder="City, Country"></div>
+            <div class="mb-2"><label class="form-label" for="a_bio">Bio</label><textarea id="a_bio" class="form-control" name="bio" rows="2"></textarea></div>
             <div class="row">
-              <div class="col mb-2"><label class="form-label">LinkedIn URL</label><input class="form-control" name="linkedin_url"></div>
-              <div class="col mb-3"><label class="form-label">GitHub URL</label><input class="form-control" name="github_url"></div>
+              <div class="col mb-2"><label class="form-label" for="a_linkedin">LinkedIn URL</label><input id="a_linkedin" class="form-control" name="linkedin_url" placeholder="https://linkedin.com/in/..."></div>
+              <div class="col mb-3"><label class="form-label" for="a_github">GitHub URL</label><input id="a_github" class="form-control" name="github_url" placeholder="https://github.com/..."></div>
             </div>
             <button class="btn btn-primary w-100" type="submit">Register as Alumni</button>
           </form>
@@ -69,5 +95,6 @@
     </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/chip-input.js"></script>
 </body>
 </html>
