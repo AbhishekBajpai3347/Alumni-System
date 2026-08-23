@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Alumni Finder - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <div class="container py-4">
+    <h3 class="mb-3">Alumni Finder</h3>
+
+    <form method="GET" action="/alumni/finder" class="card p-3 mb-4">
+      <div class="row g-2">
+        <div class="col-md-3"><input class="form-control" name="name" placeholder="Name" value="<%= query.name || '' %>"></div>
+        <div class="col-md-2"><input class="form-control" name="graduation_year" placeholder="Grad Year" value="<%= query.graduation_year || '' %>"></div>
+        <div class="col-md-2"><input class="form-control" name="branch" placeholder="Branch" value="<%= query.branch || '' %>"></div>
+        <div class="col-md-2"><input class="form-control" name="company" placeholder="Company" value="<%= query.company || '' %>"></div>
+        <div class="col-md-2"><input class="form-control" name="skills" placeholder="Skill" value="<%= query.skills || '' %>"></div>
+        <div class="col-md-1"><button class="btn btn-primary w-100" type="submit">Search</button></div>
+      </div>
+      <div class="row g-2 mt-1">
+        <div class="col-md-4"><input class="form-control" name="location" placeholder="Location" value="<%= query.location || '' %>"></div>
+      </div>
+    </form>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <% if (results.length === 0) { %>
+      <div class="empty-state">
+        <h5>No alumni found</h5>
+        <p>Try adjusting your filters, or use the <a href="/ai/finder">AI Finder</a> to describe what you're looking for in plain English.</p>
+      </div>
+    <% } else { %>
+      <div class="row g-3">
+        <% results.forEach(a => { %>
+          <div class="col-md-4">
+            <a href="/alumni/<%= a.id %>" class="text-decoration-none text-dark">
+              <div class="card card-alumni h-100 p-3">
+                <div class="fw-bold"><%= a.name %></div>
+                <div class="small text-muted"><%= a.job_role || 'N/A' %> at <%= a.company_name || 'N/A' %></div>
+                <div class="small text-muted">🎓 <%= a.department_name || 'N/A' %>, Class of <%= a.graduation_year || 'N/A' %></div>
+                <div class="small text-muted mb-2">📍 <%= a.location || 'N/A' %></div>
+                <div>
+                  <% (a.skills || []).slice(0, 4).forEach(s => { %>
+                    <span class="badge bg-light text-dark border me-1"><%= s %></span>
+                  <% }) %>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+  <%- include('../partials/footer') %>
+</body>
+</html>

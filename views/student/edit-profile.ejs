@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Profile - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <div class="container py-4" style="max-width:640px;">
+    <h3 class="mb-3">Edit My Profile</h3>
+    <% if (error) { %><div class="alert alert-danger py-2"><%= error %></div><% } %>
+    <form method="POST" action="/student/profile/edit" class="card p-4">
+      <div class="mb-2"><label class="form-label">Name</label><input class="form-control" name="name" value="<%= profile.name %>" required></div>
+      <div class="row">
+        <div class="col mb-2"><label class="form-label">Branch</label><input class="form-control" name="branch" value="<%= profile.branch || '' %>"></div>
+        <div class="col mb-2"><label class="form-label">Year</label><input type="number" class="form-control" name="year" min="1" max="5" value="<%= profile.year || '' %>"></div>
+      </div>
+      <div class="mb-2"><label class="form-label">Graduation Year</label><input type="number" class="form-control" name="graduation_year" value="<%= profile.graduation_year || '' %>"></div>
+      <div class="mb-3"><label class="form-label">Interests (comma-separated)</label><input class="form-control" name="interests" value="<%= profile.interests.join(', ') %>"></div>
+      <button class="btn btn-primary w-100" type="submit">Save Changes</button>
+    </form>
+  </div>
+  <%- include('../partials/footer') %>
+</body>
+</html>

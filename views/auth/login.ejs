@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container d-flex align-items-center justify-content-center" style="min-height:100vh;">
+    <div class="card shadow-sm p-4" style="max-width:420px; width:100%;">
+      <h3 class="mb-3 text-center">🎓 Welcome Back</h3>
+      <% if (error) { %>
+        <div class="alert alert-danger py-2"><%= error %></div>
+      <% } %>
+      <form method="POST" action="/auth/login">
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </form>
+      <p class="text-center mt-3 mb-0 small">No account? <a href="/auth/register">Register here</a></p>
+    </div>
+  </div>
+</body>
+</html>

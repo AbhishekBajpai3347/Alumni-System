@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Profile - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <div class="container py-4" style="max-width:640px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3>My Profile</h3>
+      <a href="/student/profile/edit" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+    </div>
+    <div class="card p-4">
+      <p><strong>Name:</strong> <%= profile.name %></p>
+      <p><strong>Enrollment Number:</strong> <%= profile.enrollment_number %></p>
+      <p><strong>Branch:</strong> <%= profile.branch || 'Not set' %></p>
+      <p><strong>Year:</strong> <%= profile.year || 'Not set' %></p>
+      <p><strong>Graduation Year:</strong> <%= profile.graduation_year || 'Not set' %></p>
+      <p class="mb-0"><strong>Interests:</strong>
+        <% if (profile.interests.length === 0) { %> None set <% } else { %>
+          <% profile.interests.forEach(i => { %><span class="badge bg-secondary me-1"><%= i %></span><% }) %>
+        <% } %>
+      </p>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</body>
+</html>

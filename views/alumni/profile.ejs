@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= profile.name %> - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <div>
+        <h3 class="mb-0"><%= profile.name %></h3>
+        <p class="text-muted mb-0"><%= profile.job_role || 'N/A' %> at <%= profile.company_name || 'N/A' %></p>
+      </div>
+      <% if (isOwner) { %>
+        <a href="/alumni/profile/edit" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+      <% } %>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card p-3">
+          <p><strong>Branch:</strong> <%= profile.department_name || 'N/A' %></p>
+          <p><strong>Graduation Year:</strong> <%= profile.graduation_year || 'N/A' %></p>
+          <p><strong>Location:</strong> <%= profile.location || 'N/A' %></p>
+          <p><strong>Experience:</strong> <%= profile.experience_years ? profile.experience_years + ' years' : 'N/A' %></p>
+          <p>
+            <% if (profile.linkedin_url) { %><a href="<%= profile.linkedin_url %>" target="_blank" class="btn btn-sm btn-outline-secondary me-1">LinkedIn</a><% } %>
+            <% if (profile.github_url) { %><a href="<%= profile.github_url %>" target="_blank" class="btn btn-sm btn-outline-secondary">GitHub</a><% } %>
+          </p>
+          <p class="mb-1">
+            <% if (profile.mentorship_available) { %><span class="badge bg-success me-1">Open to Mentorship</span><% } %>
+            <% if (profile.referral_available) { %><span class="badge bg-info">Open to Referrals</span><% } %>
+          </p>
+          <hr>
+          <p class="mb-1"><strong>Skills</strong></p>
+          <p>
+            <% if (profile.skills.length === 0) { %><span class="text-muted small">None listed</span><% } %>
+            <% profile.skills.forEach(s => { %><span class="badge bg-light text-dark border me-1 mb-1"><%= s %></span><% }) %>
+          </p>
+          <p class="mb-1"><strong>Interests</strong></p>
+          <p class="mb-0">
+            <% if (profile.interests.length === 0) { %><span class="text-muted small">None listed</span><% } %>
+            <% profile.interests.forEach(i => { %><span class="badge bg-light text-dark border me-1 mb-1"><%= i %></span><% }) %>
+          </p>
+        </div>
+
+        <% if (profile.bio) { %>
+          <div class="card p-3 mt-3">
+            <p class="mb-0"><strong>Bio</strong><br><%= profile.bio %></p>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="col-md-8">
+        <h5>Career Journey</h5>
+        <% if (profile.journey.length === 0) { %>
+          <div class="empty-state">No career journey entries yet.</div>
+        <% } else { %>
+          <div class="timeline">
+            <% profile.journey.forEach(j => { %>
+              <div class="timeline-item">
+                <div class="fw-bold"><%= j.role %> <span class="text-muted fw-normal">at <%= j.company_name || 'N/A' %></span></div>
+                <div class="small text-muted">
+                  <%= j.start_date ? new Date(j.start_date).toLocaleDateString() : '?' %>
+                  &ndash;
+                  <%= j.end_date ? new Date(j.end_date).toLocaleDateString() : 'Present' %>
+                </div>
+                <% if (j.description) { %><div class="small mt-1"><%= j.description %></div><% } %>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <h5 class="mt-4">Advice Given</h5>
+        <% if (profile.advice.length === 0) { %>
+          <div class="empty-state">No advice given yet.</div>
+        <% } else { %>
+          <% profile.advice.forEach(a => { %>
+            <div class="card p-3 mb-2">
+              <div class="small text-muted mb-1">Q: <%= a.question %></div>
+              <div class="small"><%= a.answer %></div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+</body>
+</html>

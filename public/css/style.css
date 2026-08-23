@@ -1,0 +1,55 @@
+body {
+  background-color: #f5f6fa;
+}
+
+.card-alumni {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card-alumni:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+}
+
+.match-score-badge {
+  font-size: 0.85rem;
+}
+
+.timeline {
+  border-left: 3px solid #0d6efd;
+  margin-left: 1rem;
+  padding-left: 1.5rem;
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -1.9rem;
+  top: 0.3rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0d6efd;
+}
+
+.stat-card {
+  border-radius: 0.75rem;
+}
+
+.empty-state {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.chart-bar {
+  height: 22px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #0d6efd, #6ea8fe);
+}
+
+#aiLoading {
+  display: none;
+}

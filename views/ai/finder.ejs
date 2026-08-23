@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Finder - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+  <div class="container py-4">
+    <h3 class="mb-1">✨ AI Finder</h3>
+    <p class="text-muted">Describe the kind of alumnus you're looking for in plain English.</p>
+
+    <div class="card p-3 mb-3">
+      <textarea id="aiQuery" class="form-control mb-2" rows="3"
+        placeholder="e.g. I am interested in cybersecurity and want to find an alumnus who works in cybersecurity and can guide me about internships."></textarea>
+      <button id="aiSearchBtn" class="btn btn-primary">Find Matching Alumni</button>
+    </div>
+
+    <div id="aiLoading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted mt-2 mb-0">Understanding your query and searching alumni profiles…</p>
+    </div>
+
+    <div id="aiError" class="alert alert-danger" style="display:none;"></div>
+
+    <div id="aiStructured" class="mb-3" style="display:none;">
+      <div class="card p-3 bg-light">
+        <div class="small text-muted mb-1">Extracted requirements:</div>
+        <div id="aiStructuredContent" class="small"></div>
+      </div>
+    </div>
+
+    <div id="aiResults" class="row g-3"></div>
+
+    <div id="aiEmpty" class="empty-state" style="display:none;">
+      <h5>No matching alumni found</h5>
+      <p>Try rephrasing your query or use the <a href="/alumni/finder">regular Alumni Finder</a>.</p>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+  <script src="/js/ai-finder.js"></script>
+</body>
+</html>

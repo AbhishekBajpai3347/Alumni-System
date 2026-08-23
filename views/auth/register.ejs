@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container d-flex align-items-center justify-content-center py-5" style="min-height:100vh;">
+    <div class="card shadow-sm p-4" style="max-width:560px; width:100%;">
+      <h3 class="mb-3 text-center">🎓 Create Your Account</h3>
+      <% if (error) { %>
+        <div class="alert alert-danger py-2"><%= error %></div>
+      <% } %>
+
+      <ul class="nav nav-pills mb-3 justify-content-center" role="tablist">
+        <li class="nav-item">
+          <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#studentTab" type="button">Student</button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-bs-toggle="pill" data-bs-target="#alumniTab" type="button">Alumni</button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="studentTab">
+          <form method="POST" action="/auth/register/student">
+            <div class="mb-2"><label class="form-label">Name</label><input class="form-control" name="name" required></div>
+            <div class="mb-2"><label class="form-label">Email</label><input type="email" class="form-control" name="email" required></div>
+            <div class="mb-2"><label class="form-label">Password</label><input type="password" class="form-control" name="password" required minlength="8"></div>
+            <div class="mb-2"><label class="form-label">Enrollment Number</label><input class="form-control" name="enrollment_number" required></div>
+            <div class="row">
+              <div class="col mb-2"><label class="form-label">Branch</label><input class="form-control" name="branch"></div>
+              <div class="col mb-2"><label class="form-label">Year</label><input type="number" class="form-control" name="year" min="1" max="5"></div>
+            </div>
+            <div class="mb-2"><label class="form-label">Graduation Year</label><input type="number" class="form-control" name="graduation_year"></div>
+            <div class="mb-3"><label class="form-label">Interests (comma-separated)</label><input class="form-control" name="interests" placeholder="e.g. Cybersecurity, Cloud Computing"></div>
+            <button class="btn btn-primary w-100" type="submit">Register as Student</button>
+          </form>
+        </div>
+
+        <div class="tab-pane fade" id="alumniTab">
+          <form method="POST" action="/auth/register/alumni">
+            <div class="mb-2"><label class="form-label">Name</label><input class="form-control" name="name" required></div>
+            <div class="mb-2"><label class="form-label">Email</label><input type="email" class="form-control" name="email" required></div>
+            <div class="mb-2"><label class="form-label">Password</label><input type="password" class="form-control" name="password" required minlength="8"></div>
+            <div class="row">
+              <div class="col mb-2"><label class="form-label">Branch</label><input class="form-control" name="branch"></div>
+              <div class="col mb-2"><label class="form-label">Graduation Year</label><input type="number" class="form-control" name="graduation_year"></div>
+            </div>
+            <div class="row">
+              <div class="col mb-2"><label class="form-label">Company</label><input class="form-control" name="company"></div>
+              <div class="col mb-2"><label class="form-label">Job Role</label><input class="form-control" name="job_role"></div>
+            </div>
+            <div class="mb-2"><label class="form-label">Location</label><input class="form-control" name="location"></div>
+            <div class="mb-2"><label class="form-label">Bio</label><textarea class="form-control" name="bio" rows="2"></textarea></div>
+            <div class="row">
+              <div class="col mb-2"><label class="form-label">LinkedIn URL</label><input class="form-control" name="linkedin_url"></div>
+              <div class="col mb-3"><label class="form-label">GitHub URL</label><input class="form-control" name="github_url"></div>
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Register as Alumni</button>
+          </form>
+        </div>
+      </div>
+
+      <p class="text-center mt-3 mb-0 small">Already have an account? <a href="/auth/login">Login here</a></p>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

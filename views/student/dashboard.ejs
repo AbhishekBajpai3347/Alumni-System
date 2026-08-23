@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('../partials/navbar') %>
+
+  <div class="container py-4">
+    <h2 class="mb-1">Welcome back, <%= user.role === 'student' ? 'Student' : 'Alumnus' %> 👋</h2>
+    <p class="text-muted mb-4">Here's what's happening in your alumni network today.</p>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card stat-card text-center p-3 bg-primary text-white h-100">
+          <div class="fs-3 fw-bold"><%= stats.total_alumni %></div>
+          <div class="small">Alumni</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card text-center p-3 bg-success text-white h-100">
+          <div class="fs-3 fw-bold"><%= stats.total_students %></div>
+          <div class="small">Students</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card text-center p-3 bg-info text-white h-100">
+          <div class="fs-3 fw-bold"><%= stats.total_companies %></div>
+          <div class="small">Companies</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card stat-card text-center p-3 bg-warning text-white h-100">
+          <div class="fs-3 fw-bold"><%= stats.total_questions %></div>
+          <div class="small">Questions Asked</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-7">
+        <h5>Recommended Alumni</h5>
+        <% if (recommended.length === 0) { %>
+          <div class="empty-state">No recommended alumni yet.</div>
+        <% } else { %>
+          <div class="row g-3">
+            <% recommended.forEach(a => { %>
+              <div class="col-md-6">
+                <a href="/alumni/<%= a.id %>" class="text-decoration-none text-dark">
+                  <div class="card card-alumni h-100 p-3">
+                    <div class="fw-bold"><%= a.name %></div>
+                    <div class="small text-muted"><%= a.job_role || 'N/A' %> at <%= a.company_name || 'N/A' %></div>
+                    <div class="small text-muted">📍 <%= a.location || 'N/A' %> · Class of <%= a.graduation_year || 'N/A' %></div>
+                  </div>
+                </a>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <h5 class="mt-4">Career Insights &mdash; Top Skills</h5>
+        <div class="card p-3">
+          <% if (topSkills.length === 0) { %>
+            <div class="empty-state">No skill data yet.</div>
+          <% } else { %>
+            <% const max = Math.max(...topSkills.map(s => parseInt(s.cnt))); %>
+            <% topSkills.forEach(s => { %>
+              <div class="mb-2">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span><%= s.name %></span><span><%= s.cnt %></span>
+                </div>
+                <div class="chart-bar" style="width: <%= Math.max(10, (s.cnt / max) * 100) %>%;"></div>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <h5>Recent Alumni Advice</h5>
+        <% if (recentAdvice.length === 0) { %>
+          <div class="empty-state">No advice posted yet.</div>
+        <% } else { %>
+          <% recentAdvice.forEach(a => { %>
+            <div class="card p-3 mb-2">
+              <div class="small text-muted mb-1">Q: <%= a.question %></div>
+              <div class="small">"<%= a.answer %>" &mdash; <strong><%= a.alumni_name %></strong></div>
+            </div>
+          <% }) %>
+        <% } %>
+        <a href="/advice" class="btn btn-outline-primary btn-sm mt-2">View all advice →</a>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

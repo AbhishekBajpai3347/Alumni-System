@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Alumni Survey - Alumni Career Intelligence</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container py-4" style="max-width:800px;">
+    <h3 class="mb-1">Alumni Career & College Experience Survey</h3>
+    <p class="text-muted">This helps students find you and get relevant advice. Takes about 5 minutes.</p>
+    <% if (error) { %><div class="alert alert-danger py-2"><%= error %></div><% } %>
+
+    <form method="POST" action="/alumni/survey">
+      <%
+        let currentSection = null;
+        questions.forEach(q => {
+          const key = 'q' + q.no;
+          const existingVal = existing[q.no];
+      %>
+        <% if (q.section !== currentSection) { currentSection = q.section; %>
+          <h5 class="mt-4 mb-2 text-primary"><%= currentSection %></h5>
+        <% } %>
+
+        <div class="card p-3 mb-2">
+          <label class="form-label small fw-bold"><%= q.no %>. <%= q.text %></label>
+
+          <% if (q.type === 'single') { %>
+            <% q.options.forEach(opt => { %>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="<%= key %>" value="<%= opt %>" id="<%= key %>_<%= opt.replace(/\W+/g,'_') %>"
+                  <%= existingVal === opt ? 'checked' : '' %>>
+                <label class="form-check-label small" for="<%= key %>_<%= opt.replace(/\W+/g,'_') %>"><%= opt %></label>
+              </div>
+            <% }) %>
+          <% } else if (q.type === 'multi') { %>
+            <% q.options.forEach(opt => { %>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="<%= key %>" value="<%= opt %>" id="<%= key %>_<%= opt.replace(/\W+/g,'_') %>"
+                  <%= Array.isArray(existingVal) && existingVal.includes(opt) ? 'checked' : '' %>>
+                <label class="form-check-label small" for="<%= key %>_<%= opt.replace(/\W+/g,'_') %>"><%= opt %></label>
+              </div>
+            <% }) %>
+          <% } else if (q.type === 'integer') { %>
+            <input type="number" class="form-control form-control-sm" name="<%= key %>" value="<%= existingVal !== undefined ? existingVal : '' %>">
+          <% } else { %>
+            <textarea class="form-control form-control-sm" name="<%= key %>" rows="2"><%= existingVal !== undefined ? existingVal : '' %></textarea>
+          <% } %>
+        </div>
+      <% }) %>
+
+      <button type="submit" class="btn btn-primary w-100 mt-3 mb-5">Submit Survey</button>
+    </form>
+  </div>
+</body>
+</html>
