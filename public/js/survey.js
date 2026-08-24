@@ -39,13 +39,25 @@ document.addEventListener('DOMContentLoaded', () => {
   show(0);
 
   // Highlight selected checkboxes/radios (multi-select "blue fill" spec)
-  document.querySelectorAll('.option-check-wrap').forEach((wrap) => {
-    const input = wrap.querySelector('input');
-    if (!input) return;
-    const sync = () => wrap.classList.toggle('selected', input.checked);
-    input.addEventListener('change', sync);
-    sync();
-  });
+  document.querySelectorAll('.option-check-wrap input').forEach((input) => {
+    input.addEventListener('change', () => {
+        document.querySelectorAll(`input[name="${input.name}"]`).forEach((radio) => {
+            const wrap = radio.closest('.option-check-wrap');
+            if (wrap) {
+                wrap.classList.toggle('selected', radio.checked);
+            }
+        });
+    });
+});
+
+// Initial state
+document.querySelectorAll('.option-check-wrap input').forEach((input) => {
+    const wrap = input.closest('.option-check-wrap');
+    if (wrap) {
+        wrap.classList.toggle('selected', input.checked);
+    }
+});
+
 
   // 500-char counters on open-ended textareas
   document.querySelectorAll('textarea[data-charcount]').forEach((ta) => {

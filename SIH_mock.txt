@@ -1,0 +1,883 @@
+You are an expert full-stack engineer.
+
+Build a complete working web application called:
+
+AI-Powered Alumni Career Intelligence System
+
+IMPORTANT:
+- Build the application according to the requirements below.
+- Do not invent major features that are not specified.
+- Keep the implementation practical and suitable for a 5-day college project.
+- Prioritize correctness, integration, working functionality, clean structure, and a usable UI over unnecessary complexity.
+- Do not use React.
+- Use EJS for server-rendered frontend.
+- Do not create a Python backend.
+- Use PostgreSQL as the primary database.
+- Qdrant should only be used for semantic alumni search, not as a replacement for PostgreSQL.
+- Provide clear setup instructions and environment variables.
+- The application must run locally after installing dependencies and configuring environment variables.
+
+==================================================
+1. TECH STACK
+==================================================
+
+Frontend:
+- HTML
+- CSS
+- JavaScript
+- EJS
+
+Backend:
+- Node.js
+- Express.js
+
+Authentication:
+- JWT
+- Access token
+- Refresh token
+- Logout must invalidate the active refresh token/session appropriately
+
+Database:
+- PostgreSQL
+- Neon PostgreSQL
+
+LLM:
+- Groq API
+
+Vector Database:
+- Qdrant
+
+Use a suitable embedding model for generating vector embeddings.
+Do not silently assume an embedding model.
+Document the selected embedding model, its vector dimension, and how it is configured.
+
+==================================================
+2. CORE APPLICATION
+==================================================
+
+The website should contain:
+
+- Home Page
+- Alumni Finder
+- AI Finder
+- Insights
+- Advice
+- Student/Alumni Profile
+- Login
+- Register
+- Alumni onboarding survey
+- Alumni career journey/timeline
+- Profile editing
+
+Students and alumni must be able to edit their profiles.
+
+==================================================
+3. HOME PAGE
+==================================================
+
+Navbar at the top.
+
+Navigation items:
+- Alumni Finder
+- AI Finder
+- Insights
+- Advice
+
+Also include:
+- Welcome message
+- Career Insights
+- Recommended Alumni
+- Quick Statistics
+- Alumni advice given on student questions
+- Logout button
+
+Navbar should be available after authentication.
+
+==================================================
+4. ALUMNI FINDER
+==================================================
+
+Provide:
+
+- Search bar
+- Filtering options:
+  - Name
+  - Graduation Year
+  - Branch
+  - Company
+  - Job Role
+  - Skills
+  - Location
+
+These hard/structured searches should be handled directly through PostgreSQL.
+
+Results should show relevant alumni.
+
+Each result should be clickable and lead to the alumni profile.
+
+==================================================
+5. AI FINDER
+==================================================
+
+Provide a large text area where a student describes what kind of alumni they are looking for.
+
+Example:
+
+"I am interested in cybersecurity and want to find an alumnus who works in cybersecurity and can guide me about internships."
+
+The system should:
+
+1. Send the student's natural-language query to the Groq LLM.
+2. Extract useful structured requirements into JSON.
+
+Example:
+
+{
+    "interests": ["cybersecurity"],
+    "skills": [],
+    "job_roles": ["cybersecurity"],
+    "location": [],
+    "graduation_year": null,
+    "branch": null,
+    "experience": null,
+    "other_requirements": []
+}
+
+3. Use structured requirements for exact/hard filtering where appropriate.
+4. Generate an embedding for the student's query or the semantic portion of the query.
+5. Search Qdrant for semantically similar alumni.
+6. Retrieve the top 5-10 matching alumni IDs.
+7. Fetch the complete alumni records from PostgreSQL.
+8. Return results in descending order of relevance.
+9. Display a meaningful match score.
+10. Display a short explanation for why an alumnus matched.
+
+The final UI should show:
+
+- Alumni name
+- Current company
+- Current role
+- Skills
+- Graduation year
+- Location
+- Match score
+- Why they matched
+
+Clicking an alumnus should open the detailed alumni profile.
+
+IMPORTANT:
+Do not blindly use Qdrant for all filtering.
+Use PostgreSQL for exact structured filters and Qdrant for semantic similarity.
+
+==================================================
+6. QDRANT
+==================================================
+
+PostgreSQL remains the source of truth.
+
+For every alumni:
+
+1. Collect relevant profile information.
+2. Collect relevant survey answers.
+3. Collect relevant career journey information.
+4. Collect relevant advice/free-text information where useful.
+5. Construct a consolidated text representation of the alumnus.
+6. Generate an embedding.
+7. Store one Qdrant point for that alumnus.
+
+Example payload:
+
+{
+    "alumni_id": 123
+}
+
+The Qdrant vector is the embedding.
+
+Use a single clearly defined collection for alumni semantic search unless there is a strong implementation reason otherwise.
+
+Document:
+- Collection name
+- Embedding model
+- Vector dimension
+- Distance metric
+
+==================================================
+7. QDRANT SYNCHRONIZATION
+==================================================
+
+This requirement is mandatory.
+
+Whenever an alumnus changes information that contributes to the semantic representation:
+
+- Profile
+- Skills
+- Interests
+- Career journey
+- Survey answers
+- Relevant advice
+
+the system must:
+
+1. Update PostgreSQL.
+2. Reconstruct the alumnus semantic document.
+3. Generate a new embedding.
+4. Update/upsert that alumnus's Qdrant point.
+
+This prevents stale vectors.
+
+==================================================
+8. ALUMNI PROFILE
+==================================================
+
+Show:
+
+- Name
+- Graduation Year
+- Branch
+- Current Company
+- Current Role
+- Location
+- Skills
+- Experience
+- LinkedIn
+- GitHub
+- Career Journey
+- Mentorship availability
+- Referral availability
+- Advice
+
+Also show a timeline of their career journey.
+
+Alumni should be able to edit:
+- Profile information
+- Skills
+- Interests
+- Current role/company
+- Career journey
+- Relevant availability
+- Advice
+
+==================================================
+9. INSIGHTS
+==================================================
+
+Create a Data Intelligence Dashboard containing:
+
+- Career distribution
+- Most common skills
+- Top companies
+
+These should be generated from the PostgreSQL data.
+
+Use charts/visualizations where appropriate.
+
+==================================================
+10. ADVICE SYSTEM
+==================================================
+
+Students can post career-related questions.
+
+Alumni can answer these questions.
+
+Show:
+- Questions
+- Answer buttons/actions
+- Previous answers
+
+Define the following behavior explicitly:
+- Students create questions.
+- Alumni can answer questions.
+- Alumni can edit their own answers.
+- Students can view answers to their questions.
+- Questions and answers should be stored in PostgreSQL.
+
+Do not add chat/messaging unless explicitly requested.
+
+==================================================
+11. STUDENT PROFILE
+==================================================
+
+Student profile fields:
+
+- Name
+- Branch
+- Year
+- Interests
+- Enrollment Number
+- Graduation Year
+
+Students must be able to edit their profile.
+
+==================================================
+12. ALUMNI PROFILE
+==================================================
+
+Alumni profile fields:
+
+- Name
+- Branch
+- Graduation Year
+- Company
+- Job Role
+- Location
+- Bio
+- LinkedIn URL
+- GitHub URL
+- Skills
+- Interests
+- Experience
+- Career Journey
+- Mentorship availability
+- Referral availability
+- Advice
+
+Alumni must be able to edit all appropriate fields.
+
+==================================================
+13. AUTHENTICATION
+==================================================
+
+Use JWT authentication.
+
+Use:
+- Access token
+- Refresh token
+- Protected routes
+- Role-based access control
+
+Roles:
+- Student
+- Alumni
+- Admin
+
+The current UI primarily requires Student and Alumni flows, but the database should support Admin.
+
+LOGIN:
+
+Use email + password as the primary login credentials for both students and alumni.
+
+STUDENT REGISTRATION:
+
+- Enrollment Number
+- Email
+- Password
+- Branch
+- Year
+- Graduation Year
+- Interests
+- Name
+
+ALUMNI REGISTRATION:
+
+- Name
+- Email
+- Password
+- Branch
+- Graduation Year
+- Company
+- Job Role
+- Location
+- Bio
+- LinkedIn URL
+- GitHub URL
+
+After an alumni completes registration and logs in for the first time, redirect them to the alumni survey.
+
+==================================================
+14. ALUMNI SURVEY
+==================================================
+
+After alumni registration, show:
+
+ALUMNI CAREER & COLLEGE EXPERIENCE SURVEY
+
+Use the following questions exactly as defined below.
+
+ACADEMIC BACKGROUND
+
+1. What was your branch/department?
+[Computer Engineering, Information Technology, Mechanical Engineering, Civil Engineering, Electrical Engineering, Electronics & Communication Engineering, Other]
+
+2. What year did you graduate?
+(integer type)
+
+3. What was your approximate CGPA range?
+[Below 6, 6–7, 7–8, 8–9, 9–10]
+
+4. Which subjects did you find most interesting during your degree?
+[Data Structures & Algorithms, Database Management Systems, Operating Systems, Computer Networks, Artificial Intelligence/Machine Learning, Web Development, Mathematics, Electronics, Software Engineering, Other]
+
+5. Which subject or field outside your primary specialization were you particularly interested in?
+[Data Science, Artificial Intelligence/Machine Learning, Web Development, Cybersecurity, Cloud Computing, DevOps, Networking, Finance, Business/Entrepreneurship, Design/UI/UX, Management, Other]
+
+6. Did your academic interests change during college?
+[No, Slightly, Significantly, Completely]
+
+TECHNICAL SKILLS & LEARNING
+
+7. Which programming languages are you proficient in?
+[C, C++, Java, Python, JavaScript, TypeScript, Go, C#, PHP, Rust, Other]
+
+8. Which technical areas are you proficient in?
+[Web Development, Backend Development, Mobile Development, Data Science, Artificial Intelligence/Machine Learning, Database Management, Cloud Computing, DevOps, Cybersecurity, Networking, Embedded Systems/IoT, Software Testing, Other]
+
+9. When did you start seriously learning programming outside your coursework?
+[1st Year, 2nd Year, 3rd Year, Final Year, After Graduation]
+
+10. Did you practice Data Structures & Algorithms (DSA) during college?
+[Regularly, Occasionally, Only before placements, No]
+
+11. When did you start practicing DSA seriously?
+[1st Year, 2nd Year, 3rd Year, Final Year, After Graduation, Did not practice DSA]
+
+12. Approximately how many personal/academic projects did you complete before graduation?
+(integer type)
+
+13. What type of projects did you primarily build?
+[Web Development, Mobile Development, Artificial Intelligence/Machine Learning, Data Science, IoT/Embedded Systems, Cybersecurity, Desktop Applications, Other]
+
+COMPETITIONS & PRACTICAL EXPERIENCE
+
+14. Did you participate in hackathons during college?
+[Yes, No]
+
+15. In which year did you participate in your first hackathon?
+[1st Year, 2nd Year, 3rd Year, Final Year, Did not participate]
+
+16. Approximately how many hackathons did you participate in?
+(integer type)
+
+17. Did you participate in coding or technical competitions?
+[Regularly, Occasionally, Once or twice, Never]
+
+18. Did you contribute to open-source projects?
+[Yes, significantly, Yes, occasionally, No]
+
+19. Did you complete an internship before graduation?
+[Yes, No]
+
+20. In which year did you get your first internship?
+[1st Year, 2nd Year, 3rd Year, Final Year, After Graduation, Never]
+
+CO-CURRICULAR & COLLEGE LIFE
+
+21. Which co-curricular activities did you participate in?
+[Technical Clubs, Cultural Clubs, Sports, Student Organizations, Volunteering, Entrepreneurship, Event Management, Student Government, Other]
+
+22. Did you hold any leadership position during college?
+[Yes, No]
+
+23. What type of leadership role did you have?
+[Club Leadership, Event Leadership, Technical Team Leadership, Student Organization Leadership, Sports Leadership, Class Representative, Other, Not Applicable]
+
+24. Did participation in extracurricular activities affect your academic performance?
+[Positively, Negatively, No significant effect, Unsure]
+
+25. Approximately how many hours per week did you spend on extracurricular activities?
+(integer type)
+
+CAREER & PLACEMENT JOURNEY
+
+26. When did you start seriously preparing for your career/placements?
+[1st Year, 2nd Year, 3rd Year, Final Year, After Graduation]
+
+27. What was your first full-time job role?
+[Software Developer/Engineer, Data Analyst, Data Scientist, AI/ML Engineer, Web Developer, Backend Developer, Frontend Developer, DevOps/Cloud Engineer, Cybersecurity Professional, Consultant, Researcher, Entrepreneur, Other]
+
+28. How did you get your first full-time job?
+[Campus Placement, Off-Campus Application, Employee Referral, Internship Conversion, Networking, Entrepreneurship, Higher Studies, Other]
+
+29. Approximately how many job applications did you make before receiving your first offer?
+(integer type)
+
+30. Approximately how many interviews did you attend before receiving your first offer?
+(integer type)
+
+31. Which skills were most important in getting your first job?
+[DSA, Programming Skills, Projects, Communication Skills, Aptitude, Academic Performance, Internship Experience, Technical Knowledge, Networking, Resume Building, Other]
+
+CAREER DEVELOPMENT
+
+32. Did your first job match the career you originally wanted?
+[Yes, Partially, No]
+
+33. Did you change your career field after graduation?
+[Yes, No]
+
+34. What was the primary reason for changing your career field?
+[Better Career Opportunity, Higher Salary, Change in Interest, Work Environment, Lack of Opportunities, Personal Reasons, Other, Not Applicable]
+
+35. Which skill has been the most valuable in your career so far?
+[Programming, DSA, Communication, Problem Solving, Leadership, Project Management, Technical Expertise, Networking, Adaptability, Business Skills, Other]
+
+36. Which skill do you wish you had learned during college?
+[Programming, DSA, Communication, Public Speaking, Networking, Project Development, System Design, Cloud Computing, AI/ML, Data Science, Business/Entrepreneurship, Other]
+
+REFLECTION & ADVICE
+
+37. What do you wish you had started doing earlier during college?
+[DSA, Building Projects, Internships, Networking, Hackathons, Open Source, Communication Skills, Competitive Programming, Exploring Career Options, Other]
+
+38. What do you think students spend too much time on during college?
+[Academic Grades, Competitive Programming, Social Media, Theory without Practical Application, Unnecessary Certifications, Other]
+
+39. What do you think students don't spend enough time on?
+[Projects, Internships, Networking, Communication Skills, DSA, Hackathons, Open Source, Exploring Career Options, Industry Knowledge, Other]
+
+40. If you could restart your first year of college, what would you do differently?
+[Focus more on technical skills, Build more projects, Start DSA earlier, Participate in hackathons, Join more clubs/activities, Build a professional network, Explore more career paths, Focus more on academics, Other]
+
+41. What was the biggest mistake you made during college?
+[Not starting early, Not building enough projects, Ignoring internships, Ignoring DSA, Not networking, Focusing too much on grades, Not exploring different fields, Lack of consistency, Other]
+
+42. What was the most valuable non-academic experience you had during college?
+[Internship, Hackathon, Technical Club, Cultural Activity, Sports, Leadership Role, Volunteering, Entrepreneurship, Networking, Other]
+
+43. Which activity unexpectedly helped your career later?
+[Internship, Hackathon, Technical Club, Cultural Activity, Sports, Leadership Role, Volunteering, Personal Project, Networking, Open Source, Other]
+
+44. Was there something you learned outside your degree that became important to your career?
+[Yes, No]
+
+45. Which college experience had the biggest impact on your career?
+[Internship, Projects, Hackathons, DSA/Competitive Programming, Technical Clubs, Networking, Placement Preparation, Academic Coursework, Leadership Experience, Other]
+
+46. What advice would you give to a student in their second year?
+[Start building projects, Start DSA, Find internships, Participate in hackathons, Explore different fields, Build a network, Improve communication skills, Focus on academics, Other]
+
+47. What advice would you give to a student preparing for placements?
+[Practice DSA, Build strong projects, Improve communication, Prepare aptitude, Improve resume, Practice interviews, Network with professionals, Apply widely, Other]
+
+OPEN-ENDED QUESTIONS
+
+48. What is the most valuable skill you learned during college?
+
+49. What skill do you wish you had learned earlier?
+
+50. What was the biggest mistake you made during college?
+
+51. If you could restart college, what would you do differently?
+
+52. What do you wish you had known when you were in your second year?
+
+53. What do you think students spend too much time on?
+
+54. What do you think students don't spend enough time on?
+
+55. What advice would you give to current students?
+
+==================================================
+15. SURVEY STORAGE
+==================================================
+
+Survey answers must be stored in PostgreSQL.
+
+Because many questions are multi-select and some are integer/text answers, use a flexible schema such as:
+
+alumni_survey_responses:
+- id
+- alumni_id
+- question_no
+- answer_json
+- created_at
+- updated_at
+
+answer_json should support:
+- strings
+- integers
+- arrays
+- structured answers where necessary
+
+Do not store survey answers only inside Qdrant.
+PostgreSQL must remain the source of truth.
+
+==================================================
+16. DATABASE TABLES
+==================================================
+
+Required tables:
+
+- users
+- student_profiles
+- alumni_profiles
+- interests
+- skills
+- alumni_skills
+- career_journeys
+- alumni_advice / questions_answers
+- companies
+- departments
+- alumni_survey_responses
+
+Clearly define all foreign-key relationships.
+
+At minimum:
+
+users
+    |
+    +---- student_profiles
+    |
+    +---- alumni_profiles
+                  |
+                  +---- alumni_skills ---- skills
+                  |
+                  +---- career_journeys
+                  |
+                  +---- alumni_survey_responses
+                  |
+                  +---- alumni_advice
+
+companies and departments should have proper foreign-key relationships from the appropriate profile records.
+
+Interests should support the users/profiles that need them.
+
+Do not duplicate the same information unnecessarily across tables.
+
+==================================================
+17. ER STRUCTURE
+==================================================
+
+Implement the equivalent of:
+
+users
+    |
+    +-------------------+
+    |                   |
+student_profiles   alumni_profiles
+                         |
+             +-----------+------------+----------------+
+             |           |            |                |
+       alumni_skills career_journeys alumni_advice survey_responses
+             |
+          skills
+
+Also connect:
+- companies
+- departments
+- interests
+
+through proper foreign-key relationships.
+
+==================================================
+18. PROJECT STRUCTURE
+==================================================
+
+Use this structure:
+
+alumni-system/
+│
+├── app.js
+├── package.json
+├── .env
+├── .env.example
+│
+├── config/
+│   ├── db.js
+│   └── qdrant.js
+│
+├── middleware/
+│   └── auth.js
+│
+├── routes/
+│   ├── auth.routes.js
+│   ├── alumni.routes.js
+│   ├── student.routes.js
+│   ├── ai.routes.js
+│   ├── analytics.routes.js
+│   └── advice.routes.js
+│
+├── controllers/
+│   ├── auth.controller.js
+│   ├── alumni.controller.js
+│   ├── student.controller.js
+│   ├── ai.controller.js
+│   ├── analytics.controller.js
+│   └── advice.controller.js
+│
+├── services/
+│   ├── ai.service.js
+│   ├── embedding.service.js
+│   └── qdrant.service.js
+│
+├── db/
+│   ├── schema.sql
+│   └── seed.sql
+│
+├── views/
+│   ├── partials/
+│   │   ├── navbar.ejs
+│   │   └── footer.ejs
+│   │
+│   ├── auth/
+│   │   ├── login.ejs
+│   │   └── register.ejs
+│   │
+│   ├── alumni/
+│   │   ├── dashboard.ejs
+│   │   ├── profile.ejs
+│   │   ├── career.ejs
+│   │   └── survey.ejs
+│   │
+│   ├── student/
+│   │   └── dashboard.ejs
+│   │
+│   ├── ai/
+│   │   └── finder.ejs
+│   │
+│   ├── analytics/
+│   │   └── dashboard.ejs
+│   │
+│   └── advice/
+│       └── index.ejs
+│
+└── public/
+    ├── css/
+    │   └── style.css
+    │
+    └── js/
+        ├── ai-finder.js
+        └── dashboard.js
+
+Keep the structure simple.
+Do not create unnecessary files or unnecessary architectural layers.
+
+==================================================
+19. DATABASE SEEDING
+==================================================
+
+Create seed.sql with realistic demo data.
+
+Include enough alumni and survey data so that:
+- Alumni Finder can demonstrate filtering.
+- AI Finder can demonstrate semantic matching.
+- Insights contain meaningful charts.
+- Advice has questions and answers.
+- Career timelines contain multiple entries.
+
+Use realistic but fictional data.
+
+==================================================
+20. SECURITY & VALIDATION
+==================================================
+
+Implement:
+- Password hashing
+- JWT authentication
+- Protected routes
+- Role-based authorization
+- Input validation
+- Parameterized SQL queries
+- Environment variables for secrets
+- Do not commit secrets
+- Proper error handling
+
+Do not store plaintext passwords.
+
+==================================================
+21. UI REQUIREMENTS
+==================================================
+
+Create a clean modern dashboard-oriented UI.
+
+Important:
+- Responsive layout
+- Consistent navbar
+- Cards for alumni
+- Search/filter interface
+- Charts for insights
+- Timeline for career journeys
+- Clear AI match scores
+- Loading/error states for AI Finder
+- Form validation
+- Good empty states
+
+The UI does not need excessive animations.
+
+==================================================
+22. IMPORTANT AI BEHAVIOR
+==================================================
+
+The LLM is not the database.
+
+The LLM is responsible for:
+- Understanding natural-language student queries.
+- Extracting structured requirements.
+- Producing structured JSON.
+- Helping determine semantic search input.
+
+PostgreSQL is the source of truth for structured data.
+
+Qdrant is used for semantic vector search.
+
+The final alumni records must come from PostgreSQL.
+
+Never fabricate an alumnus or profile in an AI response.
+
+==================================================
+23. ERROR HANDLING / FALLBACK
+==================================================
+
+If Groq or Qdrant is unavailable:
+
+- The main application must still run.
+- Normal Alumni Finder must continue working through PostgreSQL.
+- AI Finder should return a clear error message instead of fake results.
+
+Do not fabricate AI results.
+
+==================================================
+24. REQUIRED DOCUMENTATION
+==================================================
+
+Provide:
+
+1. README.md
+2. Installation instructions
+3. Environment variables
+4. Neon PostgreSQL setup
+5. Qdrant setup
+6. Groq API setup
+7. How to run schema.sql
+8. How to run seed.sql
+9. How to start the server
+10. Explanation of the AI Finder architecture
+11. Explanation of the Qdrant architecture
+12. Explanation of how Qdrant vectors are updated after alumni profile/survey changes
+
+==================================================
+25. IMPLEMENTATION ORDER
+==================================================
+
+Build in this order:
+
+1. Project setup
+2. PostgreSQL schema
+3. Authentication
+4. Student registration/profile
+5. Alumni registration/profile
+6. Alumni survey
+7. Career journey
+8. Advice system
+9. Normal Alumni Finder
+10. Insights dashboard
+11. Qdrant integration
+12. Embedding generation
+13. AI Finder
+14. Qdrant synchronization on profile/survey updates
+15. UI polish
+16. Seed data
+17. Error handling
+18. README
+
+Do not proceed by creating fake placeholder functionality for core features.
+
+After each major module, ensure the application remains runnable.
+
+At the end, provide:
+- complete file tree
+- setup instructions
+- environment variable list
+- database schema summary
+- API route summary
+- AI/Qdrant flow summary
+- known limitations

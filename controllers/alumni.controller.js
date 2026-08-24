@@ -312,8 +312,19 @@ async function submitSurvey(req, res) {
   }
 }
 
+async function skipSurvey(req, res) {
+  const alumniId = await getAlumniIdForUser(req.user.id);
+  try {
+    await db.query('UPDATE alumni_profiles SET onboarding_completed = true WHERE id = $1', [alumniId]);
+    res.redirect('/');
+  } catch (err) {
+    console.error('[alumni] skipSurvey error:', err);
+    res.redirect('/');
+  }
+}
+
 module.exports = {
   finderPage, viewAlumniProfile, viewOwnProfile, editProfileForm, updateProfile,
-  careerPage, addCareerEntry, deleteCareerEntry, surveyPage, submitSurvey,
+  careerPage, addCareerEntry, deleteCareerEntry, surveyPage, submitSurvey, skipSurvey,
   getFullProfile, getAlumniIdForUser,
 };

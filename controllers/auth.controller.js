@@ -102,7 +102,7 @@ async function registerStudent(req, res) {
     await client.query('ROLLBACK');
     console.error('[auth] registerStudent error:', err);
     res.render('auth/register', { error: 'Registration failed. Please check your input and try again.' });
-  } finally {
+  } finally { 
     client.release();
   }
 }

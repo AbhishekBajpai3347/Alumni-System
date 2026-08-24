@@ -17,7 +17,11 @@
           </div>
         </div>
         <% if (isOwner) { %>
-          <a href="/alumni/profile/edit" class="btn btn-outline-light btn-sm">Edit Profile</a>
+          <div class="d-flex gap-2">
+            <a href="/alumni/profile/edit" class="btn btn-outline-light btn-sm">Edit Profile</a>
+            <a href="/alumni/career" class="btn btn-outline-light btn-sm">Manage Career Journey</a>
+            <a href="/alumni/survey" class="btn btn-outline-light btn-sm">Take/Retake Survey</a>
+          </div>
         <% } %>
       </div>
     </div>
@@ -45,8 +49,11 @@
             <% profile.interests.forEach(i => { %><span class="chip"><%= i %></span><% }) %>
           </p>
           <div class="d-flex gap-2">
-            <% if (profile.linkedin_url) { %><a href="<%= profile.linkedin_url %>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">🔗 LinkedIn</a><% } %>
-            <% if (profile.github_url) { %><a href="<%= profile.github_url %>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">💻 GitHub</a><% } %>
+            <% 
+              const formatUrl = (u) => u && !/^https?:\/\//i.test(u) ? 'https://' + u : u;
+            %>
+            <% if (profile.linkedin_url) { %><a href="<%= formatUrl(profile.linkedin_url) %>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">🔗 LinkedIn</a><% } %>
+            <% if (profile.github_url) { %><a href="<%= formatUrl(profile.github_url) %>" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">💻 GitHub</a><% } %>
           </div>
         </div>
 
