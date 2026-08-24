@@ -16,7 +16,6 @@ async function buildAlumniDocument(alumniId) {
      WHERE ap.id = $1`,
     [alumniId]
   );
-  console.log(profileRes)
   if (profileRes.rows.length === 0) return null;
   const p = profileRes.rows[0];
 
@@ -102,15 +101,27 @@ async function syncAlumniVector(alumniId) {
 }
 
 /**
+ * Minimum raw cosine similarity for a Qdrant hit to count as a match at all.
+ * Without this, Qdrant's search is a pure top-K nearest-neighbour lookup: it
+ * always returns `limit` points no matter how dissimilar they are to the
+ * query, which is why irrelevant queries were still "matching" alumni.
+ * Configurable via SEMANTIC_MATCH_MIN_SCORE since the right cutoff depends
+ * on the embedding model in use.
+ */
+const MIN_SCORE = parseFloat(process.env.SEMANTIC_MATCH_MIN_SCORE || '0.40');
+
+/**
  * Runs a semantic search against Qdrant given free-text (already the
  * semantic portion of a student's query) and returns [{alumni_id, score}].
+ * Only hits at or above MIN_SCORE are returned -- see MIN_SCORE comment.
  */
 async function semanticSearch(queryText, limit = 10) {
   const vector = await generateEmbedding(queryText);
   const results = await client.query(COLLECTION_NAME, {
-    vector,
+    query: vector,
     limit,
     with_payload: true,
+    score_threshold: MIN_SCORE,
   });
   return results.points.map((r) => ({ alumni_id: r.payload.alumni_id, score: r.score }));
 }
@@ -119,4 +130,4 @@ async function deleteAlumniVector(alumniId) {
   await client.delete(COLLECTION_NAME, { points: [alumniId] });
 }
 
-module.exports = { buildAlumniDocument, syncAlumniVector, semanticSearch, deleteAlumniVector };
+module.exports = { buildAlumniDocument, syncAlumniVector, semanticSearch, deleteAlumniVector, MIN_SCORE };

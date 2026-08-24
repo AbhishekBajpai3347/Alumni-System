@@ -1,9 +1,28 @@
 const db = require('../config/db');
 const { extractStructuredRequirements, explainMatch } = require('../services/ai.service');
-const { semanticSearch } = require('../services/qdrant.service');
+const { semanticSearch, MIN_SCORE } = require('../services/qdrant.service');
 
 function finderPage(req, res) {
   res.render('ai/finder');
+}
+
+/**
+ * Raw cosine similarity from this embedding model clusters in a narrow high
+ * band for this domain (every alumni document shares the same "Name: ...
+ * Role: ... Department: ..." template, so that boilerplate dominates the
+ * vector and pushes *all* similarities up) -- e.g. realistically ~0.40 (weak)
+ * to ~0.90 (excellent) rather than the full 0-1 range. Multiplying the raw
+ * score by 100 directly made nearly everything read as "100% match".
+ * This rescales [MIN_SCORE, MAX_SCORE] -> [0, 100] so the displayed
+ * percentage actually discriminates between weak and strong matches.
+ * Configurable since the right ceiling depends on the embedding model.
+ */
+const MAX_SCORE = parseFloat(process.env.SEMANTIC_MATCH_MAX_SCORE || '0.90');
+
+function toMatchPercent(rawScore) {
+  const clamped = Math.min(Math.max(rawScore, MIN_SCORE), MAX_SCORE);
+  const pct = ((clamped - MIN_SCORE) / (MAX_SCORE - MIN_SCORE)) * 100;
+  return Math.round(Math.min(100, Math.max(0, pct)));
 }
 
 /**
@@ -83,7 +102,7 @@ async function search(req, res) {
     const merged = semanticHits
       .filter((h) => byId[h.alumni_id])
       .slice(0, 10)
-      .map((h) => ({ ...byId[h.alumni_id], match_score: Math.round(h.score * 100) }));
+      .map((h) => ({ ...byId[h.alumni_id], match_score: toMatchPercent(h.score) }));
 
     // Generate short "why matched" explanations (best-effort, non-blocking on failure).
     const withExplanations = await Promise.all(

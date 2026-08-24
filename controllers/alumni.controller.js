@@ -234,6 +234,19 @@ async function surveyPage(req, res) {
   res.render('alumni/survey', { questions: SURVEY_QUESTIONS, existing, error: null });
 }
 
+// Survey questions whose answers map directly onto the alumni_skills /
+// alumni_interests tables the profile page and Alumni Finder read from.
+// Without this, a fresh alumni's Skills/Interests/Career Journey sections
+// stayed empty even after finishing the whole survey -- the answers were
+// only ever saved as free text in alumni_survey_responses, never reaching
+// the structured tables the rest of the UI displays.
+// (Career journey isn't auto-populated here: the survey only captures a
+// single first-job role with no company/dates, so fabricating a journey
+// entry from it would misrepresent real data -- alumni add that via the
+// dedicated Career Journey page instead.)
+const SKILL_QUESTION_NOS = [7, 8];   // programming languages, technical areas
+const INTEREST_QUESTION_NOS = [4, 5]; // academic subjects, outside-field interests
+
 async function submitSurvey(req, res) {
   const alumniId = await getAlumniIdForUser(req.user.id);
   const client = await db.getClient();
@@ -254,6 +267,35 @@ async function submitSurvey(req, res) {
          ON CONFLICT (alumni_id, question_no) DO UPDATE SET answer_json = EXCLUDED.answer_json, updated_at = now()`,
         [alumniId, q.no, JSON.stringify(value)]
       );
+
+      // Mirror relevant multi-select answers into the structured
+      // skills/interests tables so the profile page and Alumni Finder
+      // reflect them immediately, not just the raw survey record.
+      const values = Array.isArray(value) ? value : (value ? [value] : []);
+      if (SKILL_QUESTION_NOS.includes(q.no)) {
+        for (const skillName of values) {
+          const r = await client.query(
+            `INSERT INTO skills (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id`,
+            [skillName]
+          );
+          await client.query(
+            `INSERT INTO alumni_skills (alumni_id, skill_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+            [alumniId, r.rows[0].id]
+          );
+        }
+      }
+      if (INTEREST_QUESTION_NOS.includes(q.no)) {
+        for (const interestName of values) {
+          const r = await client.query(
+            `INSERT INTO interests (name) VALUES ($1) ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name RETURNING id`,
+            [interestName]
+          );
+          await client.query(
+            `INSERT INTO alumni_interests (alumni_id, interest_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+            [alumniId, r.rows[0].id]
+          );
+        }
+      }
     }
     await client.query('UPDATE alumni_profiles SET onboarding_completed = true WHERE id = $1', [alumniId]);
     await client.query('COMMIT');
