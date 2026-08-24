@@ -24,7 +24,7 @@ async function finderPage(req, res) {
   `;
 
   if (name) { conditions.push(`ap.name ILIKE $${idx++}`); params.push(`%${name}%`); }
-  if (graduation_year) { conditions.push(`ap.graduation_year = $${idx++}`); params.push(graduation_year); }
+  if (graduation_year && !isNaN(parseInt(graduation_year, 10))) { conditions.push(`ap.graduation_year = $${idx++}`); params.push(parseInt(graduation_year, 10)); }
   if (branch) { conditions.push(`d.name ILIKE $${idx++}`); params.push(`%${branch}%`); }
   if (company) { conditions.push(`c.name ILIKE $${idx++}`); params.push(`%${company}%`); }
   if (location) { conditions.push(`ap.location ILIKE $${idx++}`); params.push(`%${location}%`); }
@@ -138,13 +138,15 @@ async function updateProfile(req, res) {
       companyId = r.rows[0].id;
     }
 
+    const pGradYear = parseInt(graduation_year, 10) || null;
+    const pExp = parseFloat(experience_years) || null;
     await client.query(
       `UPDATE alumni_profiles SET name=$1, department_id=$2, graduation_year=$3, company_id=$4, job_role=$5,
        location=$6, bio=$7, linkedin_url=$8, github_url=$9, experience_years=$10,
        mentorship_available=$11, referral_available=$12, updated_at=now()
        WHERE id = $13`,
-      [name, deptId, graduation_year || null, companyId, job_role || null, location || null, bio || null,
-        linkedin_url || null, github_url || null, experience_years || null,
+      [name, deptId, pGradYear, companyId, job_role || null, location || null, bio || null,
+        linkedin_url || null, github_url || null, pExp,
         mentorship_available === 'on', referral_available === 'on', alumniId]
     );
 
@@ -316,6 +318,7 @@ async function skipSurvey(req, res) {
   const alumniId = await getAlumniIdForUser(req.user.id);
   try {
     await db.query('UPDATE alumni_profiles SET onboarding_completed = true WHERE id = $1', [alumniId]);
+    syncAlumniVector(alumniId).catch((e) => console.error('[qdrant] sync after survey skip failed:', e.message));
     res.redirect('/');
   } catch (err) {
     console.error('[alumni] skipSurvey error:', err);

@@ -82,10 +82,12 @@ async function updateProfile(req, res) {
       deptId = deptRes.rows[0].id;
     }
 
+    const pYear = parseInt(year, 10) || null;
+    const pGradYear = parseInt(graduation_year, 10) || null;
     const spRes = await client.query(
       `UPDATE student_profiles SET name = $1, year = $2, graduation_year = $3, department_id = $4, updated_at = now()
        WHERE user_id = $5 RETURNING id`,
-      [name, year || null, graduation_year || null, deptId, req.user.id]
+      [name, pYear, pGradYear, deptId, req.user.id]
     );
     const studentId = spRes.rows[0].id;
 

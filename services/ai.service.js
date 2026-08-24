@@ -106,7 +106,10 @@ async function explainMatch(studentQuery, alumnusSummary) {
         timeout: 10000,
       }
     );
-    return response.data.choices[0].message.content.trim();
+    const content = response.data.choices[0].message.content;
+    let trimmed = content ? content.trim() : '';
+    trimmed = trimmed.replace(/^["']|["']$/g, '');
+    return trimmed || `Matched based on overlapping skills, interests, or role with your query.`;
   } catch (err) {
     return `Matched based on overlapping skills, interests, or role with your query.`;
   }

@@ -76,10 +76,12 @@ async function registerStudent(req, res) {
       deptId = deptRes.rows[0].id;
     }
 
+    const pYear = parseInt(year, 10) || null;
+    const pGradYear = parseInt(graduation_year, 10) || null;
     const spRes = await client.query(
       `INSERT INTO student_profiles (user_id, name, enrollment_number, department_id, year, graduation_year)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-      [userId, name, enrollment_number, deptId, year || null, graduation_year || null]
+      [userId, name, enrollment_number, deptId, pYear, pGradYear]
     );
     const studentId = spRes.rows[0].id;
 
@@ -144,11 +146,12 @@ async function registerAlumni(req, res) {
       companyId = compRes.rows[0].id;
     }
 
+    const pGradYear = parseInt(graduation_year, 10) || null;
     await client.query(
       `INSERT INTO alumni_profiles
        (user_id, name, department_id, graduation_year, company_id, job_role, location, bio, linkedin_url, github_url, onboarding_completed)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, false)`,
-      [userId, name, deptId, graduation_year || null, companyId, job_role || null, location || null, bio || null, linkedin_url || null, github_url || null]
+      [userId, name, deptId, pGradYear, companyId, job_role || null, location || null, bio || null, linkedin_url || null, github_url || null]
     );
 
     await client.query('COMMIT');

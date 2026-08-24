@@ -74,8 +74,11 @@ async function search(req, res) {
     let idx = 2;
 
     if (structured.graduation_year) {
-      conditions.push(`ap.graduation_year = $${idx++}`);
-      params.push(structured.graduation_year);
+      const gYear = parseInt(structured.graduation_year, 10);
+      if (!isNaN(gYear)) {
+        conditions.push(`ap.graduation_year = $${idx++}`);
+        params.push(gYear);
+      }
     }
     if (structured.branch) {
       conditions.push(`d.name ILIKE $${idx++}`);
@@ -108,7 +111,20 @@ async function search(req, res) {
     const withExplanations = await Promise.all(
       merged.map(async (alum) => {
         const summary = `${alum.name}, ${alum.job_role || 'N/A'} at ${alum.company_name || 'N/A'}, skills: ${(alum.skills || []).join(', ') || 'N/A'}, location: ${alum.location || 'N/A'}.`;
-        const why = await explainMatch(query, summary);
+        let why = await explainMatch(query, summary);
+        if (!why || why === 'Matched based on overlapping skills, interests, or role with your query.') {
+          const parts = [];
+          if (structured.job_roles && structured.job_roles.length) parts.push(`role (${structured.job_roles.join(', ')})`);
+          if (structured.skills && structured.skills.length) parts.push(`skills (${structured.skills.join(', ')})`);
+          if (structured.interests && structured.interests.length) parts.push(`interests (${structured.interests.join(', ')})`);
+          if (structured.location && structured.location.length) parts.push(`location (${structured.location.join(', ')})`);
+          
+          if (parts.length > 0) {
+            why = `Matched query requirements for ${parts.join(', ')}.`;
+          } else {
+            why = 'Matched based on general profile similarity.';
+          }
+        }
         return { ...alum, why_matched: why };
       })
     );
