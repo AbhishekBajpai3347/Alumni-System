@@ -251,6 +251,7 @@ select:focus-visible,
   border-radius: var(--radius-card);
   box-shadow: 0 8px 24px var(--shadow-color-hover);
   padding: 6px;
+  transform: translate(50px, 0px);
 }
 .dropdown-menu.app-dropdown .dropdown-item {
   color: var(--text-body);
